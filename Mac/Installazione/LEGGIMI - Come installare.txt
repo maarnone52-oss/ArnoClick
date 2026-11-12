@@ -1,0 +1,62 @@
+ARNOCLICK per Mac (da macOS 10.13 High Sierra in poi)
+=====================================================
+
+ARNOCLICK ricava il tempo (BPM) e il click, audio e MIDI, da un brano
+audio o video.
+Funziona su macOS 10.13 High Sierra e successivi, Mac Intel e chip Apple.
+Per macOS Catalina e successivi è consigliata la versione 2.9.60:
+https://github.com/maarnone52-oss/ArnoClick/releases/tag/mac-2.9.60
+
+
+PRIMA DI TUTTO (solo High Sierra e Mojave)
+------------------------------------------
+L'app usa il motore di Safari installato sul Mac. Aggiorna Safari
+all'ultima versione disponibile (13.1.2) da App Store > Aggiornamenti,
+altrimenti alcune parti non funzionano.
+
+
+INSTALLAZIONE
+-------------
+1. In questa finestra trascina l'icona ARNOCLICK sulla cartella
+   "Applicazioni" che vedi accanto.
+   Se il Mac chiede di sostituire una versione già presente, scegli
+   "Sostituisci": Recenti e impostazioni restano.
+2. Chiudi questa finestra ed espelli il disco "ArnoClick"
+   (clic destro sull'icona del disco > Espelli).
+
+
+PRIMA APERTURA
+--------------
+L'app non viene dall'App Store, quindi la prima volta il Mac la blocca.
+Si sblocca una volta sola:
+
+- da High Sierra fino a Sonoma:
+  apri la cartella Applicazioni, clic destro (o Ctrl+clic) su
+  ARNOCLICK > Apri > Apri.
+
+- macOS Sequoia o più recente:
+  fai doppio clic sull'app e chiudi l'avviso, poi vai in
+  Impostazioni di Sistema > Privacy e sicurezza, scorri in basso e
+  premi "Apri comunque".
+
+Dalla volta successiva si apre normalmente con doppio clic.
+In basso nella finestra compare il numero di versione.
+
+
+USO VELOCE
+----------
+- Carica un brano o un video: trascinalo nella finestra oppure
+  File > Apri (Cmd+O).
+- Un progetto ARNOCLICK (.zip) si apre allo stesso modo: brano e
+  impostazioni come sono stati salvati.
+- La guida completa è nell'app: menu Aiuto > Guida di ARNOCLICK.
+
+
+AGGIORNARE O DISINSTALLARE
+--------------------------
+- Per aggiornare: scarica il nuovo file e ripeti l'installazione,
+  scegliendo "Sostituisci".
+- Per disinstallare: trascina ARNOCLICK dalla cartella Applicazioni
+  nel Cestino.
+
+(c) 2026 Maurizio Arnone

@@ -1,0 +1,62 @@
+# Compila l'app per Mac (universale: Intel + chip Apple, da macOS 10.13 High Sierra in poi)
+# su un Mac di GitHub e la pubblica nella pagina "Releases" del repository.
+name: App Mac
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mac:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installa XcodeGen
+        run: brew install xcodegen
+
+      - name: Genera il progetto Xcode
+        run: xcodegen generate
+
+      - name: Compila (universale)
+        run: |
+          set -o pipefail
+          xcodebuild -project ArnoClick.xcodeproj -scheme ArnoClickMac -configuration Release \
+            -destination 'generic/platform=macOS' -derivedDataPath build \
+            ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO build | tail -n 60
+
+      - name: Controlla e impacchetta
+        run: |
+          APP="build/Build/Products/Release/ArnoClick.app"
+          lipo -archs "$APP/Contents/MacOS/ArnoClick"
+          otool -l "$APP/Contents/MacOS/ArnoClick" | grep -A4 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX" | grep -E "minos|version" | head -4
+          test -f "$APP/Contents/Resources/Web/index.html"
+          echo "Librerie Swift incluse (servono su macOS prima di 10.14.4):"; ls "$APP/Contents/Frameworks" 2>/dev/null || echo "nessuna"
+          otool -L "$APP/Contents/MacOS/ArnoClick" | grep -i swift | head -5 || true
+          codesign --force --deep --sign - "$APP"
+          ditto -c -k --keepParent "$APP" ArnoClick-Mac.zip
+          ls -lh ArnoClick-Mac.zip
+          # disco .dmg con l'app, il collegamento ad Applicazioni e le istruzioni
+          mkdir -p dmg && cp -R "$APP" dmg/ && ln -s /Applications dmg/Applicazioni
+          cp "Mac/Installazione/LEGGIMI - Come installare.txt" dmg/
+          hdiutil create -volname "ArnoClick" -srcfolder dmg -ov -format UDZO ArnoClick-Mac.dmg
+          ls -lh ArnoClick-Mac.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ArnoClick-Mac
+          path: ArnoClick-Mac.zip
+
+      - name: Pubblica nella pagina Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view mac >/dev/null 2>&1 || gh release create mac --title "ARNOCLICK per Mac" \
+            --notes "App per Mac (Intel e chip Apple), da macOS 10.13 High Sierra in poi. Scarica ArnoClick-Mac.zip qui sotto."
+          gh release upload mac ArnoClick-Mac.zip ArnoClick-Mac.dmg --clobber
+          gh release edit mac --title "ARNOCLICK per Mac" --notes "App per Mac (Intel e chip Apple), da macOS 10.13 High Sierra in poi. Scarica ArnoClick-Mac.dmg (disco con istruzioni) oppure ArnoClick-Mac.zip qui sotto. Su High Sierra e Mojave aggiorna Safari all'ultima versione disponibile (13.1.2)."

@@ -1,0 +1,74 @@
+# App per Mac Catalina e successivi (Intel + chip Apple) con file di installazione .pkg e .dmg,
+# pubblicata nella pagina Releases "mac-VERSIONE". La versione è quella scritta in project.yml.
+name: App Mac Catalina
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mac:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Legge la versione
+        run: |
+          VER=$(sed -n 's/.*MARKETING_VERSION: "\(.*\)".*/\1/p' project.yml | head -1)
+          test -n "$VER"
+          echo "VER=$VER" >> "$GITHUB_ENV"
+
+      - name: Installa XcodeGen
+        run: brew install xcodegen
+
+      - name: Genera il progetto Xcode
+        run: xcodegen generate
+
+      - name: Compila (universale)
+        run: |
+          set -o pipefail
+          xcodebuild -project ArnoClick.xcodeproj -scheme ArnoClickMac -configuration Release \
+            -destination 'generic/platform=macOS' -derivedDataPath build \
+            ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO build | tail -n 60
+
+      - name: Controlla e impacchetta
+        run: |
+          APP="build/Build/Products/Release/ArnoClick.app"
+          lipo -archs "$APP/Contents/MacOS/ArnoClick"
+          otool -l "$APP/Contents/MacOS/ArnoClick" | grep -A4 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX" | grep -E "minos|version" | head -4
+          test -f "$APP/Contents/Resources/Web/index.html"
+          echo "Librerie Swift incluse (servono su macOS prima di 10.14.4):"; ls "$APP/Contents/Frameworks" 2>/dev/null || echo "nessuna"
+          otool -L "$APP/Contents/MacOS/ArnoClick" | grep -i swift | head -5 || true
+          codesign --force --deep --sign - "$APP"
+          ditto -c -k --keepParent "$APP" ArnoClick-Mac-${VER}.zip
+          # disco .dmg: l'app e un collegamento alla cartella Applicazioni, da trascinare
+          mkdir -p dmg && cp -R "$APP" dmg/ && ln -s /Applications dmg/Applicazioni
+          cp "Mac/Installazione/LEGGIMI - Come installare.txt" dmg/
+          hdiutil create -volname "ArnoClick ${VER}" -srcfolder dmg -ov -format UDZO ArnoClick-${VER}-Catalina.dmg
+          # programma di installazione .pkg: mette l'app direttamente in /Applicazioni
+          mkdir -p pkgroot && cp -R "$APP" pkgroot/
+          pkgbuild --analyze --root pkgroot comp.plist
+          plutil -replace 0.BundleIsRelocatable -bool NO comp.plist
+          pkgbuild --root pkgroot --component-plist comp.plist --identifier it.arnone.arnoclick.mac.pkg --version ${VER} \
+            --install-location /Applications comp.pkg
+          productbuild --package comp.pkg ArnoClick-${VER}-Catalina.pkg
+          ls -lh ArnoClick-Mac-${VER}.zip ArnoClick-${VER}-Catalina.dmg ArnoClick-${VER}-Catalina.pkg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ArnoClick-Mac-${{ env.VER }}
+          path: ArnoClick-Mac-${{ env.VER }}.zip
+
+      - name: Pubblica nella pagina Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view mac-${VER} >/dev/null 2>&1 || gh release create mac-${VER} --target main --title "x" --notes "x"
+          gh release upload mac-${VER} ArnoClick-Mac-${VER}.zip ArnoClick-${VER}-Catalina.dmg ArnoClick-${VER}-Catalina.pkg --clobber
+          gh release edit mac-${VER} --title "ARNOCLICK per Mac Catalina e successivi - versione consigliata ${VER}" \
+            --notes "Versione consigliata per macOS 10.15 Catalina e successivi (Intel e chip Apple). Contiene tutte le novità fino alla ${VER}. Installazione: ArnoClick-${VER}-Catalina.pkg (doppio clic, si installa da solo in Applicazioni) oppure ArnoClick-${VER}-Catalina.dmg (trascina l'app in Applicazioni). Sostituisce l'app ArnoClick già installata e ne conserva Recenti e impostazioni. La prima volta: clic destro sul file > Apri."

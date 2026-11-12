@@ -1,0 +1,57 @@
+# Crea "ARNOCLICK Chrome": piccola app per Mac (da 10.11) che apre la pagina di ARNOCLICK
+# in una finestra di Google Chrome. La pubblica come .dmg e .pkg nella pagina Releases "mac-chrome".
+name: App Mac Chrome
+
+on:
+  push:
+    branches: [main]
+    paths: ['MacChrome/**', '.github/workflows/chrome.yml', 'Mac/Assets.xcassets/AppIcon.appiconset/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  chrome:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Costruisci l'app
+        run: |
+          APP="ARNOCLICK Chrome.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp MacChrome/Info.plist "$APP/Contents/Info.plist"
+          cp MacChrome/arnoclick.sh "$APP/Contents/MacOS/ArnoClick"
+          chmod +x "$APP/Contents/MacOS/ArnoClick"
+          printf 'APPL????' > "$APP/Contents/PkgInfo"
+          # icona
+          I=AppIcon.iconset; mkdir -p $I; S=Mac/Assets.xcassets/AppIcon.appiconset
+          for n in 16 32 128 256 512; do cp $S/mac-$n@1x.png $I/icon_${n}x${n}.png; cp $S/mac-$n@2x.png $I/icon_${n}x${n}@2x.png; done
+          iconutil -c icns $I -o "$APP/Contents/Resources/AppIcon.icns"
+          plutil -lint "$APP/Contents/Info.plist"
+          codesign --force --deep --sign - "$APP"
+          ls -lR "$APP"
+
+      - name: File di installazione (.dmg e .pkg)
+        run: |
+          APP="ARNOCLICK Chrome.app"
+          mkdir -p dmg && cp -R "$APP" dmg/ && ln -s /Applications dmg/Applicazioni
+          cp "MacChrome/LEGGIMI - Come installare.txt" dmg/
+          hdiutil create -volname "ARNOCLICK Chrome" -srcfolder dmg -ov -format UDZO ArnoClick-Chrome.dmg
+          mkdir -p pkgroot && cp -R "$APP" pkgroot/
+          pkgbuild --analyze --root pkgroot comp.plist
+          plutil -replace 0.BundleIsRelocatable -bool NO comp.plist
+          pkgbuild --root pkgroot --component-plist comp.plist --identifier it.arnone.arnoclick.chrome.pkg --version 1.0 \
+            --install-location /Applications comp.pkg
+          productbuild --package comp.pkg ArnoClick-Chrome.pkg
+          ls -lh ArnoClick-Chrome.dmg ArnoClick-Chrome.pkg
+
+      - name: Pubblica nella pagina Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view mac-chrome >/dev/null 2>&1 || gh release create mac-chrome --target main --title "x" --notes "x"
+          gh release upload mac-chrome ArnoClick-Chrome.dmg ArnoClick-Chrome.pkg --clobber
+          gh release edit mac-chrome --title "ARNOCLICK Chrome per Mac (consigliata su High Sierra e Mojave)" \
+            --notes "ARNOCLICK nella versione web, dentro una finestra di Google Chrome (serve Chrome; su High Sierra va bene la 116). Si aggiorna da solo. Installazione: ArnoClick-Chrome.pkg (doppio clic, si installa in Applicazioni) oppure ArnoClick-Chrome.dmg (trascina l'app in Applicazioni). La prima volta: clic destro sull'app > Apri."

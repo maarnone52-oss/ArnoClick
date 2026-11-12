@@ -1,0 +1,498 @@
+ARNOCLICK — guida all'installazione
+© 2026 Maurizio Arnone. Tutti i diritti riservati.
+
+------------------------------------------------------------------------
+PRIMA DI INIZIARE: COSA ASPETTARSI
+------------------------------------------------------------------------
+ARNOCLICK ascolta una traccia audio (o l'audio di un video), riconosce i
+battiti, ne ricava il tempo (BPM) battito per battito e costruisce un
+click che segue il brano, da ascoltare insieme alla musica ed esportare
+in audio (.wav) e in MIDI con la mappa del tempo. Gran parte del lavoro
+avviene in automatico.
+
+- Risultati eccellenti con i brani dal ritmo abbastanza stabile:
+  registrati con il click o con una batteria regolare, musica
+  elettronica, brani con attacchi chiari.
+- Alcuni brani richiedono probabilmente la postproduzione, di cui il
+  software è dotato: esecuzioni dal vivo con accelerazioni, rallentamenti
+  o rubato; brani senza percussioni o con molto riverbero; cambi di tempo
+  o di metro, terzine e swing; registrazioni rumorose o compresse.
+  Errori tipici: click al doppio o alla metà, click in levare, primo
+  tempo della battuta spostato, picchi nel grafico del tempo.
+  Strumenti: ÷2 / ×2, BPM scritto a mano, primo tempo, Andamento,
+  Allineamento, Risoluzione dell'analisi, Ammorbidimento / Oscillazioni /
+  Tempo del click nelle aree, archivio delle modifiche, Brano a tempo fisso.
+- La verifica ad orecchio è sempre indispensabile: ascolta tutto il brano
+  con il click (meglio in cuffie con il filo: il Bluetooth aggiunge
+  ritardo) e controlla il MIDI esportato nel sequencer.
+- A volte basta la percezione del sincronismo giusto: i musicisti suonano
+  naturalmente un po' avanti o indietro e pochi millesimi di secondo di
+  solito non si avvertono. Se suonandoci sopra il click "tiene", il lavoro
+  è fatto anche se il grafico non è perfetto; e un grafico pulito non
+  garantisce un click giusto (per esempio se è in levare o al doppio).
+Più dettagli nella Guida dentro l'app (pulsante ❓ Guida), prima voce.
+
+ARNOCLICK esiste in tre forme. Tutte usano la stessa pagina (cartella Web)
+e funzionano senza internet: il brano non viene mai inviato da nessuna parte.
+
+------------------------------------------------------------------------
+1) PAGINA WEB INSTALLABILE  (iPhone, iPad, Android, Mac, Windows)
+------------------------------------------------------------------------
+Indirizzo:  https://maarnone52-oss.github.io/ArnoClick/
+
+Si aggiorna da sola a ogni modifica del repository (flusso "Pagina web").
+Se il flusso segnala che GitHub Pages non è attivo: nel repository vai su
+Settings > Pages > Source e scegli "GitHub Actions", poi rilancia
+Actions > "Pagina web" > Run workflow.
+
+Installarla come app:
+- iPhone/iPad: apri l'indirizzo in Safari > Condividi > "Aggiungi alla
+  schermata Home". Si apre a schermo intero e funziona anche offline.
+- Android: apri l'indirizzo in Chrome > menu ⋮ > "Installa app".
+- Mac/PC: apri l'indirizzo in Chrome > icona "Installa" nella barra
+  dell'indirizzo (o menu ⋮ > "Installa ARNOCLICK").
+Per mandarla a un collaboratore basta inviargli l'indirizzo.
+
+------------------------------------------------------------------------
+2) APP PER MAC  (Intel e chip Apple, da macOS 10.13 High Sierra in poi)
+------------------------------------------------------------------------
+Viene compilata su un Mac di GitHub (flusso "App Mac") e pubblicata qui:
+https://github.com/maarnone52-oss/ArnoClick/releases/tag/mac
+File da scaricare: ArnoClick-Mac.zip
+
+1. Scarica ArnoClick-Mac.zip e fai doppio clic: compare ArnoClick.app.
+2. Trascina ArnoClick.app nella cartella Applicazioni.
+3. Prima apertura: l'app non è ancora firmata da Apple, quindi
+   - su High Sierra, Mojave, Catalina e fino a Sonoma: clic destro
+     (o Ctrl+clic) sull'app > Apri > Apri;
+   - su macOS più recenti: se dice che non può essere aperta, vai in
+     Impostazioni di Sistema > Privacy e sicurezza > "Apri comunque".
+   Dalla volta successiva si apre normalmente con doppio clic.
+Su High Sierra e Mojave l'app usa il motore di Safari installato:
+aggiorna Safari all'ultima versione disponibile (13.1.2) da
+App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
+La conversione dei video ("Converti video") lì può non essere disponibile.
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.60) - file di
+installazione (con zoom grafico, marker di area, ammorbidimento del click,
+risoluzione dell'analisi, archivio delle modifiche e dimensione
+regolabile dell'interfaccia):
+  programma di installazione (si installa da solo in Applicazioni):
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.60/ArnoClick-2.9.60-Catalina.pkg
+  oppure disco da aprire (trascina l'app su "Applicazioni"):
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.60/ArnoClick-2.9.60-Catalina.dmg
+  La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
+  Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
+  impostazioni.
+Con l'iscrizione all'Apple Developer Program si potrà firmarla e
+"notarizzarla", così si apre senza nessun avviso (utile per venderla).
+
+------------------------------------------------------------------------
+3) APP PER IPHONE E IPAD  (TestFlight)
+------------------------------------------------------------------------
+Come per POD Pro Remote, l'app va firmata con un account Apple: il Mac
+con Catalina non ha un Xcode abbastanza recente, quindi la compilazione
+avviene su un Mac di GitHub e l'app arriva sul telefono con TestFlight.
+Il flusso "App iPhone e iPad" verifica sempre che l'app si compili;
+l'invio a TestFlight parte solo dopo aver inserito i segreti Apple.
+
+COSA SERVE
+- L'iscrizione Apple Developer Program (circa 99 € all'anno)
+- L'app TestFlight sull'iPhone o sull'iPad (gratuita, App Store)
+
+PASSO 1 — Apple (dopo l'iscrizione)
+1. appstoreconnect.apple.com > App > "+" > Nuova app
+   - Piattaforma: iOS
+   - Nome: per esempio "ArnoClick" (deve essere unico sull'App Store)
+   - Bundle ID: creane uno nuovo, per esempio it.arnone.arnoclick
+2. La chiave API e il Team ID già creati per POD Pro Remote vanno bene
+   anche qui (stesso account Apple). Se non li hai più:
+   Utenti e accessi > Integrazioni > Chiavi API di App Store Connect,
+   chiave con ruolo "Admin" (annota Issuer ID e ID chiave, scarica il .p8);
+   il Team ID è su developer.apple.com > Account > Membership.
+
+PASSO 2 — Inserisci i dati in GitHub (non scriverli nella chat)
+Nel repository ArnoClick: Settings > Secrets and variables > Actions >
+New repository secret. Crea questi cinque segreti:
+   APPLE_TEAM_ID   il Team ID
+   APP_BUNDLE_ID   il Bundle ID scelto al passo 1
+   ASC_KEY_ID      l'ID chiave
+   ASC_ISSUER_ID   l'Issuer ID
+   ASC_KEY_P8      tutto il contenuto del file .p8 (aprilo con TextEdit e copia)
+
+PASSO 3 — Compila e installa
+1. Actions > "App iPhone e iPad" > Run workflow (10–15 minuti).
+2. App Store Connect > la tua app > TestFlight: aggiungi te stesso tra
+   i tester interni.
+3. Sull'iPhone o sull'iPad apri TestFlight e installa ArnoClick.
+Le versioni TestFlight durano 90 giorni: per rinnovarla basta rilanciare
+il flusso.
+
+Nell'app per iPhone/iPad:
+- l'audio suona anche con l'interruttore silenzioso e continua a schermo
+  bloccato;
+- i file esportati (MIDI e WAV) si salvano dal pannello Condividi
+  ("Salva in File", AirDrop, WhatsApp come documento…).
+
+------------------------------------------------------------------------
+LINGUA
+------------------------------------------------------------------------
+ARNOCLICK è in italiano e in inglese: pulsanti IT / EN in alto.
+La scelta resta memorizzata sul dispositivo.
+Il pulsante "❓ Guida" accanto a IT / EN apre una guida rapida
+dentro l'app, divisa per argomenti, nella lingua scelta (funziona anche
+senza internet).
+
+------------------------------------------------------------------------
+FILE VIDEO
+------------------------------------------------------------------------
+Oltre ai file audio (WAV, AIFF, MP3, M4A) si possono caricare video
+MP4 e MOV con audio AAC: ARNOCLICK analizza l'audio e mostra il video
+sincronizzato durante l'ascolto. Il pulsante "Video" accanto allo zoom
+lo nasconde o lo mostra; il pulsante "Ruota" gira il video di 90 gradi
+a ogni tocco (utile per i video girati in verticale), e la rotazione
+resta salvata con il brano. Le esportazioni (MIDI e WAV) restano audio.
+I video registrati con iPhone sono spesso in formato HEVC: Chrome sul Mac
+non li mostra (l'audio funziona comunque). In quel caso usa Safari o
+l'app Mac, oppure sull'iPhone imposta Impostazioni > Fotocamera > Formati
+> "Più compatibile" per i video futuri.
+Per video molto lunghi o pesanti (oltre qualche centinaio di MB) la
+memoria di iPhone e iPad può non bastare: meglio usare il Mac.
+
+CONVERTI VIDEO: il pulsante "Converti video" accanto a "Recenti"
+trasforma un video (per esempio una registrazione dello schermo
+dell'iPhone) in MP4 con audio AAC. Scegli il video, poi:
+- "Mantieni il video originale": velocissimo, nessuna perdita;
+- "Converti anche il video in H.264": più lento, ma il video si vede
+  ovunque, anche in Chrome sul Mac.
+Il menu "Risoluzione" rimpicciolisce il video (1080p, 720p, 540p,
+480p, 360p, proporzioni invariate): file più leggero, che scorre meglio
+sui Mac vecchi (richiede la conversione in H.264, fatta in automatico).
+Nell'app per Mac su High Sierra, Mojave e Catalina la conversione la fa
+il Mac stesso, con un formato fisso: MP4, video H.264 720p, audio AAC
+160 kbps. Scegli il video, poi dove salvare il file (veloce, senza
+internet); alla fine "Apri in ARNOCLICK" carica il video convertito.
+Alla fine puoi salvare il file MP4 o aprirlo subito in ARNOCLICK.
+Se un video HEVC non si vede, nel riquadro del video compare anche il
+pulsante per convertirlo. La prima volta serve la connessione internet.
+
+------------------------------------------------------------------------
+ACCENTO DEL CLICK
+------------------------------------------------------------------------
+Nel pannello Battuta: "Accento ATTIVO/SPENTO" e i tempi da accentare
+(anche più di uno, per esempio 2 e 4). Il volume dell'accento si regola
+con il fader "Accento" del mixer, rispetto al click normale (∞ = muto).
+Vale anche per i file esportati: nel MIDI l'accento è la nota 76,
+con forza proporzionale al fader; gli altri click sono la nota 77.
+
+------------------------------------------------------------------------
+FILE RECENTI
+------------------------------------------------------------------------
+Il pulsante "Recenti" accanto al riquadro di caricamento mostra gli
+ultimi 30 brani aperti (audio o video). Per ognuno ARNOCLICK ricorda le
+impostazioni (tempo scelto, battuta, primo tempo, accento, andamento,
+allineamento) e le ripristina quando lo riapri.
+Se c'è spazio il file stesso viene salvato sul dispositivo e si riapre
+con un tocco; i più vecchi vengono tolti quando si supera il limite
+(circa 800 MB su iPhone/iPad, 3 GB su computer). Quelli segnati "da
+riselezionare" vanno scelti di nuovo dal disco: le impostazioni restano.
+La ✕ toglie un brano dall'elenco, "Svuota elenco" li toglie tutti.
+
+------------------------------------------------------------------------
+PROGETTO COMPLETO DA CONDIVIDERE
+------------------------------------------------------------------------
+"Progetto completo (.zip)" nel riquadro Esporta (oppure il pulsante 📦
+accanto a un brano nei Recenti) crea un unico file con dentro il brano
+originale, audio o video, e tutte le impostazioni: tempo, battuta,
+accento, marker e loop, allineamento, rotazione del video, volumi
+Musica/Click, suono del click e BPM del tempo fisso.
+Mandalo al collaboratore come documento (WhatsApp, e-mail, AirDrop).
+Lui apre ARNOCLICK, tocca il riquadro di caricamento (o ci trascina il
+file) e sceglie il .zip: il brano si apre con tutto come l'hai lasciato
+e finisce anche nei suoi Recenti.
+Su iPhone: da WhatsApp tocca il file, poi Condividi > "Salva su File",
+e da ARNOCLICK sceglilo in File. Non serve scompattare il .zip.
+Un progetto con un video pesa quanto il video: per i file molto grandi
+WhatsApp può rifiutarlo, meglio AirDrop o un servizio come WeTransfer.
+
+------------------------------------------------------------------------
+SUONO DEL CLICK
+------------------------------------------------------------------------
+Sei suoni a scelta: Classico, Legnetto, Campanaccio, Bacchette,
+Charleston, Elettronico ("Prova" per ascoltarli). Il suono accentato è
+una variante più acuta o più lunga dello stesso suono. Nel file MIDI si
+usa lo strumento di batteria più vicino (campanaccio = nota 56,
+bacchette = 37, charleston = 42 chiuso / 46 aperto, gli altri 76/77).
+
+------------------------------------------------------------------------
+LOOP: MARKER INIZIO E FINE
+------------------------------------------------------------------------
+I marker servono per il loop; nella sezione "Loop" ci sono, uno sotto
+l'altro, i marker, il tasto del loop e l'aggancio.
+Ci sono due marker, sotto il grafico del tempo:
+- "⇤ Inizio" e "Fine ⇥" mettono quel marker nella posizione attuale,
+  anche durante l'ascolto (sul Mac tasti I e F);
+- "Aggancio" decide a cosa si agganciano: Battuta, 1/4 (il battito),
+  1/8, 1/8T (terzine), 1/16, 1/32 o Libero;
+- per spostarli basta trascinarli, col mouse o col dito, dalla
+  bandierina o dalla linea; un tocco senza trascinare porta lì;
+- se l'Inizio finisce dopo la Fine, i due si scambiano da soli;
+- "✕ Elimina" toglie quello evidenziato (il più vicino alla posizione);
+  nell'elenco, toccando un marker vuoto lo si mette nella posizione attuale.
+I marker si salvano con il brano e finiscono nel file MIDI come eventi
+"Marker" ("Inizio" e "Fine").
+
+Il loop:
+"🔁 Loop" (sul Mac anche il tasto L) ripete il tratto da Inizio a Fine;
+premendolo di nuovo il loop si spegne e l'area azzurra sparisce.
+Se sposti Inizio o Fine, il loop li segue; si spegne da solo se togli
+l'Inizio o la Fine.
+Mentre ascolti puoi toccare un punto qualunque delle tracce: il play
+continua da lì. Se il punto è prima dell'Inizio, il brano suona fino al
+loop e poi gira dentro il loop; se è dopo la Fine, suona fino alla fine
+del brano. Il loop resta acceso. Anche il tasto Play parte dal punto in
+cui si trova il cursore.
+
+------------------------------------------------------------------------
+ZOOM
+------------------------------------------------------------------------
+- Su iPhone, iPad e Android la pagina non si ingrandisce più con due dita
+  (né con il doppio tocco): i comandi restano sempre al loro posto.
+- Due dita sulla forma d'onda o sul grafico del tempo fanno lo stesso
+  zoom dei tasti + e −: allargandole si ingrandisce, stringendole si
+  allontana, con gli stessi limiti. Il punto fermo è sempre il cursore di
+  posizione (la linea bianca) se è visibile, altrimenti il centro della
+  vista; vale anche per i tasti, la rotella e il trackpad.
+- Sul Mac: con il puntatore sopra la forma d'onda o il grafico del
+  tempo, la rotella del mouse fa lo zoom come + e − (rotella in su =
+  ingrandisci, in giù = allontana); Maiusc + rotella sposta la vista a
+  destra e sinistra. Sul trackpad: pizzico per lo zoom, scorrimento
+  orizzontale a due dita per spostarsi. Per scorrere la pagina porta il
+  puntatore fuori dai grafici.
+- Barra grafica di zoom (Mappa del brano): su iPhone, iPad e Android è
+  sotto il grafico del tempo, come nell'interfaccia a pannelli del Mac e
+  della pagina web. Mostra tutto il brano; il riquadro bianco è la parte
+  visibile. Trascina il riquadro per spostarti, trascina i suoi bordi
+  azzurri per allargare o stringere lo zoom, oppure usa due dita sulla
+  barra. Un tocco fuori dal riquadro lo porta lì.
+- Risoluzione dell'analisi (sezione Marker, "Analisi e
+  ammorbidimento del click"): per trovare i battiti ARNOCLICK guarda anche gli
+  attacchi in mezzo, alla suddivisione scelta: 1/8, 1/16 (quella
+  normale), 1/32, 1/64, oppure le terzine 1/8T, 1/16T, 1/32T, 1/64T
+  per i brani in terzine. Le suddivisioni più fitte contano poco
+  ciascuna, così il click non scivola sul levare. Un battito è più sicuro se
+  anche le suddivisioni cadono al posto giusto. Con 1/4 guarda solo i
+  battiti, come nelle versioni precedenti. Si salva con il brano.
+- Prova e modifiche applicate: i cursori "Click" (ammorbidimento,
+  oscillazioni e tempo) fanno una PROVA. La senti subito mentre ascolti
+  e la vedi sul grafico (riquadro arancione tratteggiato), ma non è
+  salvata. Per tenerla premi "✔ Applica la modifica" e tocca di nuovo
+  per confermare; "⟲ Azzera i 3 cursori" riporta tutto com'era. Le
+  modifiche applicate vanno nell'archivio "Modifiche applicate" (su
+  iPhone e iPad è sotto la Mappa del brano: è una finestra che scorre,
+  con la barra verde a destra, e mostra due modifiche e mezza),
+  numerate (#1, #2…) e segnate in verde sul grafico. Ogni modifica
+  tiene anche le posizioni dei 3 cursori: dopo averla applicata
+  restano dove sono, e toccandola nell'archivio la vedi sul grafico e
+  cursori e marker arancioni tornano lì, pronti per ritoccarla
+  ("✔ Sovrascrivi la modifica", con conferma). Con una modifica
+  selezionata puoi anche spostare i marker arancioni, allargando o
+  stringendo l'area: sovrascrivendo, resta la stessa locazione. Ogni
+  locazione ha la sua cronologia: le versioni precedenti non si
+  perdono; con ‹ e › passi da una versione all'altra (la vedi e la
+  senti subito, anche durante l'ascolto) e con ⌫ (con conferma) togli
+  dalla cronologia quella mostrata. Per una locazione nuova deseleziona
+  la modifica (toccala di nuovo) o premi "Azzera i 3 cursori", poi
+  metti i marker sul nuovo tratto. Ogni area ha un solo posto
+  nell'archivio e una sola serie di modifiche: le aree possono
+  sovrapporsi o contenersi, ma i loro limiti non possono coincidere
+  (se metti i marker proprio su un'area già salvata, ritocchi quella).
+  Sul grafico ogni area ha una linguetta con lo stesso numero
+  dell'archivio. Toccando una modifica nell'archivio, o la sua
+  linguetta sul grafico, la selezioni: si evidenzia la sua area, una
+  alla volta, e tornano cursori e marker; tocca di nuovo per
+  deselezionarla. La casella a sinistra passa dal modificato (✓)
+  all'originale (vuota; la modifica resta nell'archivio); "🗑" (con conferma) la elimina per sempre: l'area torna all'originale,
+  i 3 fader dell'area tornano ai valori normali e i marker arancioni
+  si tolgono.
+  L'archivio si salva con il brano.
+- Esporta il click corretto: nel riquadro Esporta, il primo gruppo
+  (bordo verde) "Click corretto" ha "💾 Click corretto audio (.wav)" e
+  "🎹 Click corretto MIDI (.mid)". Salvano il click come lo senti
+  adesso, con tutte le modifiche attive (quelle con la spunta),
+  l'Andamento e l'Allineamento. Gli altri due gruppi sono "Brano con il
+  click" (mix e musica sx + click dx) e "Progetto" (.zip).
+- Ammorbidimento: quando in un tratto il grafico del tempo è pieno di
+  picchi, nella sezione Marker metti i due marker arancioni
+  "⟦ Inizio area" e "Fine area ⟧" ai lati del tratto (vanno sul
+  cursore; poi si trascinano come gli altri, anche dalla bandierina) e
+  muovi il cursore Ammorbidimento. A 0% il click resta com'è, a 100% il
+  tempo passa in linea retta da quello prima a quello dopo il tratto;
+  in mezzo il passaggio è continuo. Cambia solo il click (la curva
+  verde) fra i marker; la curva rossa del brano resta com'è:
+  fuori resta identico, e il numero di battiti non cambia, così le
+  battute dopo restano allineate. Il tratto ammorbidito è segnato in
+  verde; riportando il cursore a 0% si toglie.
+  Altri due cursori agiscono solo sul click (curva verde) dell'area:
+  "Click · oscillazioni" (al 100% invariate; abbassandolo i su e giù
+  della curva verde si schiacciano verso il tempo medio dell'area, fino
+  a renderla piatta; gli estremi dell'area restano fermi) e
+  "Click · tempo" (alza o abbassa il tempo del click nell'area fino a
+  ±20%; attenzione: dopo l'area il click non è più allineato alla
+  musica). Un doppio tocco riporta un cursore al valore normale.
+  In tutte le versioni c'è il riquadro "Taratura del click" con fader verticali
+  compatti: a sinistra, per l'area fra i marker arancioni, Ammorb.,
+  Oscill. e Tempo; a destra, per tutto il brano, Andamento (Andam.) e
+  Allineamento (Allin.), che non sono più nel mixer e sono sempre
+  attivi. Sul computer si possono anche cliccare e trascinare in
+  qualunque punto del binario, o regolare con la rotella del mouse. Si trascinano in su e in
+  giù prendendoli dal cursore (la levetta); fuori dal cursore il dito
+  fa scorrere la pagina, e un tocco breve sul binario porta lì il
+  cursore (su iPhone). Il doppio tocco riporta il valore normale. Lo
+  stesso vale per i fader del mixer su iPhone. Spostando i marker,
+  l'ammorbidimento li segue; mettendoli su un altro tratto si può
+  ammorbidire anche quello. Si salva con il brano e vale per gli export
+  (click audio, MIDI, brano a tempo fisso). Il piccolo ▶ della sezione
+  fa partire e fermare l'ascolto con il click in primo piano: musica
+  −5 dB e click +3 dB, solo finché ascolti (i fader non cambiano).
+
+------------------------------------------------------------------------
+BRANO A TEMPO FISSO
+------------------------------------------------------------------------
+Tutto si trova nella sezione verde "⏱ Brano a tempo fisso", sotto i
+pannelli, in tre passi numerati: ① il BPM, ② l'anteprima, ③ l'esportazione,
+che compare solo dopo aver ascoltato l'anteprima.
+La copia del brano ha ogni battito esattamente
+sulla griglia di un metronomo costante: gli intervalli fra un battito e
+l'altro vengono allungati o accorciati quanto basta (time-stretching),
+senza cambiare l'intonazione. Il BPM proposto è il BPM medio rilevato;
+si può scriverne un altro (per esempio arrotondato: 111 invece di
+111,17). Il primo battito resta dove era; nel sequencer basta impostare
+quel BPM. Funziona solo con i file audio, non con i video.
+In alto si sceglie fra due modi:
+- "⏱ Tempo fisso" (come prima): la musica va su un metronomo costante
+  al BPM del passo ①.
+- "〰 Tempo del click post-prodotto": la musica segue il click così
+  come l'hai corretto (aree della Taratura, Andamento), con tutte le
+  sue variazioni di tempo; il BPM del passo ① non serve e si spegne.
+  Ogni battito del brano va a cadere sul click corretto; il primo
+  battito resta dove era. Nel grafico dell'anteprima la linea gialla
+  tratteggiata è il tempo del click post-prodotto e la rossa (il brano
+  allineato) deve seguirla. Nel sequencer usa come mappa del tempo il
+  MIDI del click corretto. Se cambi le modifiche del click, l'anteprima
+  si chiude e va rifatta.
+Prima di esportare si può ascoltare il risultato: "▶ Anteprima" parte
+dal punto del cursore e suona il brano a tempo fisso con il click
+costante; "⇄ Originale / fisso" passa all'originale nello stesso punto
+del brano e ritorna, per confrontare. Dopo l'anteprima l'esportazione è
+immediata (il calcolo è già fatto).
+Mentre l'anteprima si prepara, sotto i due pulsanti compare una piccola
+barra con la percentuale e il tempo che manca all'inizio dell'ascolto.
+Con l'anteprima compare sotto il riquadro "Anteprima: brano a tempo
+fisso", con due finestre più piccole che mostrano il brano ALLINEATO:
+- la forma d'onda con la griglia costante (linee rosse = primo tempo);
+- il grafico del tempo: in rosso il tempo misurato sul brano allineato
+  (deve essere piatto), in grigio quello dell'originale, in giallo
+  tratteggiato il tempo fisso scelto.
+Ha i suoi comandi: ⏮ inizio, −5s / +5s, Anteprima (play/stop),
+⇄ Originale / fisso e lo zoom (− + Tutto, rotella, due dita); un tocco
+sulle finestre sposta il punto di ascolto. Niente marker né loop.
+Accanto alle finestre ci sono due fader, "Brano" e "Click", che
+regolano il volume dell'anteprima (sia del brano a tempo fisso sia
+dell'originale nel confronto ⇄) e del suo click. Sono indipendenti dal
+mixer principale. Le piccole
+variazioni vengono corrette in modo inudibile; variazioni molto forti
+(rallentando, pause) possono lasciare qualche piccolo artefatto.
+
+------------------------------------------------------------------------
+MENU E TASTI RAPIDI
+------------------------------------------------------------------------
+Mac con High Sierra o Mojave: in alternativa all'app si può usare la
+pagina web in Google Chrome (l'ultimo per questi sistemi è il 116), il
+cui motore è più veloce di Safari 13: apri
+  https://maarnone52-oss.github.io/ArnoClick/
+e premi "Pannelli" accanto a Guida per l'interfaccia a pannelli (per
+tornare: "Classica" in basso a destra). Dal menu di Chrome (tre puntini)
+> "Installa ARNOCLICK..." diventa un'app con la sua finestra, che
+funziona anche senza internet.
+Modalità leggera (app per Mac, menu Vista): sui Mac vecchi alleggerisce
+l'app (meno immagini al secondo, grafici a risoluzione normale,
+niente VU meter né traccia video nella timeline) così suono, LED e cursore restano a
+tempo. Si attiva da sola su High Sierra e Mojave; quando è attiva in
+basso compare il simbolo del fulmine.
+Con essa si attiva anche il video leggero (Vista > Video leggero):
+durante l'ascolto il video mostra circa un fotogramma al secondo invece
+di scorrere, così resta sempre a tempo e il Mac non si affatica; a brano
+fermo il video torna normale. I fotogrammi si preparano dopo il
+caricamento (qualche decina di secondi sui Mac vecchi).
+Tema: il pulsante ◐ accanto a Guida passa dal fondo nero al fondo
+grigio e viceversa (nell'app per Mac anche da Vista > Tema). Display e
+grafici restano scuri per leggerli bene. Con il tema grigio compare un
+cursore (accanto al pulsante, oppure in basso a destra nell'interfaccia
+a pannelli del Mac) che regola il grigio da scuro a chiaro; sul Mac
+anche Vista > Tema > Grigio più chiaro / più scuro (Option+Cmd+= e
+Option+Cmd+-). La scelta resta salvata.
+Sul computer: spazio = Play/Pausa, L = loop, I = Inizio, F = Fine,
+T = prova il suono, frecce sinistra/destra = battuta precedente/successiva.
+Nell'app per Mac tutti i comandi sono anche nei menu in alto: File,
+Modifica, Trasporto, Loop (marker e loop), Traccia, Esporta, Vista,
+Finestra, Aiuto.
+Accanto a ogni voce c'è la sua scorciatoia, per esempio:
+  Cmd+O apri brano, video o progetto     Cmd+S salva il progetto (.zip)
+  Cmd+E click MIDI                       Cmd+B imposta il BPM
+  Cmd+] / Cmd+[ raddoppia / dimezza      Cmd+L blocca il mixer
+  Cmd++ / Cmd+- / Cmd+0 zoom             Cmd+R ruota il video
+  Cmd+Backspace elimina il marker        Cmd+? guida
+Mentre scrivi in un campo (per esempio il BPM) le lettere vanno nel
+campo e non fanno partire i comandi. I menu seguono la lingua scelta.
+Nell'app per Mac la finestra è divisa in pannelli, come un programma
+musicale: in alto Play e i display (BPM, LED, battuta, posizione), al
+centro il brano con video, forma d'onda, grafico, marker e tempo fisso,
+a destra le impostazioni (tempo, battuta e accento, suono, mixer,
+sincronia LED, esportazioni), in basso la barra con i messaggi.
+Il brano è mostrato come una timeline a tracce, tutte allineate e con
+lo stesso zoom: righello (battute, marker Inizio/Fine da trascinare,
+loop), audio, click (accenti in rosso), andamento BPM, griglia fissa
+(verde = battiti a tempo costante, grigio = battiti del brano, così si
+vede quanto il brano si scosta) e mappa di tutto il brano (clic o
+trascina per spostarti). I pulsanti M silenziano audio o click solo
+durante l'ascolto: le esportazioni non cambiano.
+Sotto i nomi delle tracce Audio e Click ci sono i VU meter (L e R per
+l'audio stereo, uno per il click): verde fino a -12 dB, giallo fino a
+-3, rosso oltre; la tacca mostra il picco, il quadratino rosso a destra
+si accende se il segnale satura. Misurano quello che senti, dopo fader e
+mute. Nell'interfaccia classica i VU (L, R, C) sono accanto allo zoom.
+Con un video compare anche la traccia video con i fotogrammi in
+miniatura (si riempie in pochi secondi). Il video si vede in alto nel
+pannello di destra; "Stacca" (o Option+Cmd+V) lo mette in una finestra
+che si sposta trascinando l'intestazione e si allarga dall'angolo in
+basso a destra; "Aggancia" lo rimette nel pannello.
+Per tornare alla disposizione di sempre: menu Vista > Interfaccia
+classica; per riavere i pannelli: Vista > Interfaccia a pannelli. La
+scelta resta salvata e il brano aperto si riapre da solo.
+Altezza delle tracce: trascina il bordo inferiore del nome di una
+traccia (colonna di sinistra) per alzarla o abbassarla; doppio clic sul
+nome per comprimerla a una striscia sottile o riaprirla. Option +
+rotella sulla traccia Audio ingrandisce in verticale la forma d'onda.
+Vista > Ripristina tracce torna alle misure iniziali.
+Dimensione dell'interfaccia (app per Mac, menu Vista > Dimensione
+interfaccia): rimpicciolisce o ingrandisce tutta la finestra, così si
+vedono più pannelli senza scorrere. Control+Cmd+- più piccola,
+Control+Cmd++ più grande, Control+Cmd+0 dimensione normale; oppure scegli
+direttamente 50%…125%. La scelta resta. La prima volta, sui portatili da
+13" parte all'80%.
+Su iPad: tasto "Aa" in alto, poi − e + (da 50% a 125%) o 100%.
+Su iPhone: tasto "Aa", poi 100% o 75%. La pagina si ricarica in un attimo e riapre il brano, già nella
+nuova dimensione; la scelta resta.
+Nella pagina web sul computer (anche ARNOCLICK Chrome) si usa lo zoom
+del browser: Cmd − e Cmd + sul Mac (Ctrl − e Ctrl + su Windows), Cmd 0
+per tornare al 100%; Chrome lo ricorda per questa pagina. Il tasto "Aa"
+lo ricorda.
+
+------------------------------------------------------------------------
+AGGIORNAMENTI E NUMERO DI VERSIONE
+------------------------------------------------------------------------
+In fondo alla pagina c'è il numero di versione (per esempio "v1.8.2").
+La pagina web installata si aggiorna da sola quando la apri con internet
+o quando ci torni; se il numero non cambia, chiudi del tutto ARNOCLICK
+(su iPhone: scorri verso l'alto dal fondo e allontana la scheda) e
+riaprilo.

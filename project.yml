@@ -1,0 +1,92 @@
+# Progetto Xcode generato con XcodeGen (https://github.com/yonaskolb/XcodeGen)
+# Due app che mostrano la stessa pagina (cartella Web): iPhone/iPad e Mac.
+name: ArnoClick
+options:
+  deploymentTarget:
+    iOS: "15.0"
+    macOS: "10.13"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "2.9.60"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+targets:
+  ArnoClick:
+    type: application
+    platform: iOS
+    sources:
+      - path: iOS
+      - path: Web
+        type: folder
+        buildPhase: resources
+    info:
+      path: iOS/Info.plist
+      properties:
+        CFBundleDisplayName: ArnoClick
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIBackgroundModes: [audio]
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: true
+        UIRequiresFullScreen: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        ITSAppUsesNonExemptEncryption: false
+        NSHumanReadableCopyright: "© 2026 Maurizio Arnone"
+    settings:
+      base:
+        PRODUCT_NAME: ArnoClick
+        PRODUCT_BUNDLE_IDENTIFIER: it.arnone.arnoclick
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: false
+    scheme: {}
+
+  ArnoClickMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: Mac
+      - path: Web
+        type: folder
+        buildPhase: resources
+    info:
+      path: Mac/Info.plist
+      properties:
+        CFBundleName: ArnoClick
+        CFBundleDisplayName: ArnoClick
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSApplicationCategoryType: public.app-category.music
+        NSHumanReadableCopyright: "© 2026 Maurizio Arnone"
+        NSPrincipalClass: NSApplication
+        NSHighResolutionCapable: true
+    settings:
+      base:
+        PRODUCT_NAME: ArnoClick
+        PRODUCT_BUNDLE_IDENTIFIER: it.arnone.arnoclick.mac
+        MACOSX_DEPLOYMENT_TARGET: "10.13"
+        ARCHS: "arm64 x86_64"
+        ONLY_ACTIVE_ARCH: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "-"
+        DEVELOPMENT_TEAM: ""
+        ENABLE_HARDENED_RUNTIME: NO
+        GENERATE_INFOPLIST_FILE: false
+    scheme: {}

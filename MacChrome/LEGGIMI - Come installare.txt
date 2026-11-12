@@ -1,0 +1,19 @@
+ARNOCLICK Chrome - come installarlo
+===================================
+
+È ARNOCLICK nella versione web, che gira dentro Google Chrome in una
+finestra tutta sua (senza barra degli indirizzi). Consigliato sui Mac
+con macOS High Sierra o Mojave: con Chrome audio, click e video
+restano a tempo.
+
+Serve Google Chrome (su High Sierra va bene la versione 116).
+Se manca, l'app apre da sola la pagina per scaricarlo.
+
+1. Trascina "ARNOCLICK Chrome" sulla cartella Applicazioni.
+2. La prima volta: clic destro (o ctrl+clic) sull'app > Apri > Apri.
+   Le volte successive basta il doppio clic.
+3. Per averla nel Dock: trascina "ARNOCLICK Chrome" dalla cartella
+   Applicazioni al Dock.
+
+L'app si aggiorna da sola: apre sempre l'ultima versione di ARNOCLICK.
+La prima volta serve internet; dopo funziona anche senza.
