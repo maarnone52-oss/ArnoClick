@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.68) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.69) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.68/ArnoClick-2.9.68-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.69/ArnoClick-2.9.69-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.68/ArnoClick-2.9.68-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.69/ArnoClick-2.9.69-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -235,6 +235,8 @@ SELEZIONARE UN TRATTO SULLE TRACCE
   il suo posto nell'archivio) oppure "🔁 Loop" (mette lì Inizio e Fine e
   accende il loop; c'è un solo loop: il nuovo sostituisce il vecchio).
   ✕ (o Esc, o un tocco fuori) annulla.
+- Si seleziona allo stesso modo anche nella finestra mobile "Andamento
+  del tempo": la banda bianca compare sia lì sia sulle tracce.
 - Un clic o un tocco breve senza trascinare porta ancora il cursore lì.
   Per spostare la vista: col dito trascina subito (senza tenere premuto);
   col mouse usa la Mappa del brano, la rotella con Maiusc, lo
