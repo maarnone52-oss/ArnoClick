@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.64) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.65) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.64/ArnoClick-2.9.64-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.65/ArnoClick-2.9.65-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.64/ArnoClick-2.9.64-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.65/ArnoClick-2.9.65-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -251,6 +251,19 @@ continua da lì. Se il punto è prima dell'Inizio, il brano suona fino al
 loop e poi gira dentro il loop; se è dopo la Fine, suona fino alla fine
 del brano. Il loop resta acceso. Anche il tasto Play parte dal punto in
 cui si trova il cursore.
+
+------------------------------------------------------------------------
+FINESTRA "ANDAMENTO DEL TEMPO" SGANCIABILE
+------------------------------------------------------------------------
+- Accanto alla legenda del grafico "Andamento del tempo (BPM)" c'è
+  "⧉ Sgancia" (nell'interfaccia a pannelli è il tasto ⧉ nella testata
+  della traccia Tempo). Il grafico diventa una finestra che resta sopra
+  la pagina: si sposta trascinando la barra in alto e si ridimensiona
+  trascinando l'angolo in basso a destra (anche con il dito su iPhone e
+  iPad). Così puoi tenerla accanto alla Taratura del click mentre muovi
+  i cursori. Zoom, tocchi e linguette delle aree funzionano come prima.
+- "⇲ Riaggancia" la rimette al suo posto. Posizione e dimensioni
+  vengono ricordate, anche alla riapertura dell'app.
 
 ------------------------------------------------------------------------
 ZOOM
