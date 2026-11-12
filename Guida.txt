@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.67) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.68) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.67/ArnoClick-2.9.67-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.68/ArnoClick-2.9.68-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.67/ArnoClick-2.9.67-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.68/ArnoClick-2.9.68-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -222,6 +222,23 @@ Charleston, Elettronico ("Prova" per ascoltarli). Il suono accentato è
 una variante più acuta o più lunga dello stesso suono. Nel file MIDI si
 usa lo strumento di batteria più vicino (campanaccio = nota 56,
 bacchette = 37, charleston = 42 chiuso / 46 aperto, gli altri 76/77).
+
+------------------------------------------------------------------------
+SELEZIONARE UN TRATTO SULLE TRACCE
+------------------------------------------------------------------------
+- Col mouse: premi il tasto sinistro su una traccia e trascina, a destra
+  o a sinistra. Col dito: tieni premuto mezzo secondo sulla traccia
+  (finché compare la banda bianca), poi trascina. Inizio e fine seguono
+  l'Aggancio (battuta, 1/4…); vicino ai bordi la vista scorre da sola.
+- Lasciando, compare una scelta: "🟧 Area di modifica del click"
+  (mette lì i marker arancioni; le aree possono essere tante, ognuna con
+  il suo posto nell'archivio) oppure "🔁 Loop" (mette lì Inizio e Fine e
+  accende il loop; c'è un solo loop: il nuovo sostituisce il vecchio).
+  ✕ (o Esc, o un tocco fuori) annulla.
+- Un clic o un tocco breve senza trascinare porta ancora il cursore lì.
+  Per spostare la vista: col dito trascina subito (senza tenere premuto);
+  col mouse usa la Mappa del brano, la rotella con Maiusc, lo
+  scorrimento orizzontale del trackpad oppure Alt (⌥) + trascina.
 
 ------------------------------------------------------------------------
 LOOP: MARKER INIZIO E FINE
