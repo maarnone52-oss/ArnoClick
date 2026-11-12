@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.63) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.64) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.63/ArnoClick-2.9.63-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.64/ArnoClick-2.9.64-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.63/ArnoClick-2.9.63-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.64/ArnoClick-2.9.64-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -286,12 +286,15 @@ ZOOM
   oscillazioni e tempo) fanno una PROVA. La senti subito mentre ascolti
   e la vedi sul grafico (riquadro arancione tratteggiato), ma non è
   salvata. Per tenerla premi "✔ Applica la modifica" e tocca di nuovo
-  per confermare; "⟲ Azzera i 3 cursori" riporta tutto com'era. Le
+  per confermare; "⟲ Azzera i 7 cursori" (sempre attivo, tocca di
+  nuovo per confermare) riporta ai valori normali tutti i cursori della
+  Taratura: i 4 dell'area fra i marker e i 3 di tutto il brano
+  (Andamento, Allineamento, Slittamento). Le
   modifiche applicate vanno nell'archivio "Modifiche applicate" (su
   iPhone e iPad è sotto la Mappa del brano: è una finestra che scorre,
   con la barra verde a destra, e mostra due modifiche e mezza),
   numerate (#1, #2…) e segnate in verde sul grafico. Ogni modifica
-  tiene anche le posizioni dei 3 cursori: dopo averla applicata
+  tiene anche le posizioni dei 4 cursori dell'area: dopo averla applicata
   restano dove sono, e toccandola nell'archivio la vedi sul grafico e
   cursori e marker arancioni tornano lì, pronti per ritoccarla
   ("✔ Sovrascrivi la modifica", con conferma). Con una modifica
@@ -301,7 +304,7 @@ ZOOM
   perdono; con ‹ e › passi da una versione all'altra (la vedi e la
   senti subito, anche durante l'ascolto) e con ⌫ (con conferma) togli
   dalla cronologia quella mostrata. Per una locazione nuova deseleziona
-  la modifica (toccala di nuovo) o premi "Azzera i 3 cursori", poi
+  la modifica (toccala di nuovo) o premi "Azzera i 7 cursori", poi
   metti i marker sul nuovo tratto. Ogni area ha un solo posto
   nell'archivio e una sola serie di modifiche: le aree possono
   sovrapporsi o contenersi, ma i loro limiti non possono coincidere
