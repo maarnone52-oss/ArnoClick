@@ -168,7 +168,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             add(m, "Solo click (.wav)…", "Click only (.wav)…", "exClick", "e", [.command, .option])
             add(m, "Musica sx + click dx (.wav)…", "Music L + click R (.wav)…", "exStereo")
             m.addItem(.separator())
-            add(m, "Brano a tempo fisso (.wav)…", "Song at fixed tempo (.wav)…", "exWarp")
+            add(m, "Brano a tempo fisso/tempo post-prodotto (.wav)…", "Song at fixed tempo/post-produced tempo (.wav)…", "exWarp")
             m.addItem(.separator())
             add(m, "Progetto completo (.zip)…", "Full project (.zip)…", "exProj")
         }
