@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.71) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.72) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.71/ArnoClick-2.9.71-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.72/ArnoClick-2.9.72-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.71/ArnoClick-2.9.71-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.72/ArnoClick-2.9.72-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -281,6 +281,11 @@ FINESTRA "ANDAMENTO DEL TEMPO" SGANCIABILE
   trascinando l'angolo in basso a destra (anche con il dito su iPhone e
   iPad). Così puoi tenerla accanto alla Taratura del click mentre muovi
   i cursori. Zoom, tocchi e linguette delle aree funzionano come prima.
+- Comandi ◀ ▶ (nella testata del grafico, nella finestra mobile e
+  nella traccia Tempo dell'interfaccia a pannelli): spostano la vista
+  indietro e avanti nel brano. Un tocco = un passo, tenuti premuti
+  scorrono di continuo; col puntatore del mouse sopra, la rotella fa
+  scorrere avanti e indietro.
 - Aggancio automatico: al posto del grafico resta un riquadro
   tratteggiato verde. Se riporti la finestra sopra quel riquadro (almeno
   per metà in una direzione) il riquadro si illumina e, lasciando la
