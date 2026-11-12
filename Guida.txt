@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.66) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.67) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.66/ArnoClick-2.9.66-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.67/ArnoClick-2.9.67-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.66/ArnoClick-2.9.66-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.67/ArnoClick-2.9.67-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -268,6 +268,14 @@ FINESTRA "ANDAMENTO DEL TEMPO" SGANCIABILE
   finestra, questa si riaggancia da sola. Lo fa anche "⇲ Riaggancia".
   Posizione e dimensioni vengono ricordate, anche alla riapertura
   dell'app.
+- Trascinando la finestra vicino al bordo alto o basso, la zona che
+  scorre (nell'interfaccia a pannelli la colonna di sinistra, altrimenti
+  la pagina) scorre da sola, così si raggiunge il posto del grafico
+  anche quando non si vede. Col mouse la finestra si sposta e si
+  ridimensiona solo tenendo premuto il tasto sinistro.
+- Sul computer la pagina (e nell'interfaccia a pannelli ciascuna delle
+  due colonne) si può far scorrere anche trascinando col mouse un punto
+  vuoto dello sfondo, oltre che con rotella, barra laterale e frecce.
 
 ------------------------------------------------------------------------
 ZOOM
