@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.62) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.63) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.62/ArnoClick-2.9.62-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.63/ArnoClick-2.9.63-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.62/ArnoClick-2.9.62-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.63/ArnoClick-2.9.63-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -343,7 +343,13 @@ ZOOM
   compatti: a sinistra, per l'area fra i marker arancioni, Ammorb.,
   Oscill. e Tempo; a destra, per tutto il brano, Andamento (Andam.) e
   Allineamento (Allin.), che non sono più nel mixer e sono sempre
-  attivi. Sul computer si possono anche cliccare e trascinare in
+  attivi. Slittamento: fa scorrere la curva verde del click rispetto a
+  quella rossa del brano, in battiti (+ più tardi, − prima), per far
+  coincidere i cambi di tempo. "Slitt." a destra (tutto il brano, anche
+  nel mixer come "Slittam.") lascia fermi il primo e l'ultimo battito;
+  "Slitt." a sinistra agisce solo nell'area fra i marker arancioni e ne
+  lascia fermi gli estremi, quindi fuori dall'area il click non cambia.
+  Lo slittamento dell'area si salva nell'archivio come gli altri cursori. Sul computer si possono anche cliccare e trascinare in
   qualunque punto del binario, o regolare con la rotella del mouse. Si trascinano in su e in
   giù prendendoli dal cursore (la levetta); fuori dal cursore il dito
   fa scorrere la pagina, e un tocco breve sul binario porta lì il
