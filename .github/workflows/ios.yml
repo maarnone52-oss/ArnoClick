@@ -1,0 +1,91 @@
+# App per iPhone e iPad: la compila su un Mac di GitHub con Xcode 26 (obbligatorio
+# per l'App Store dal 28 aprile 2026), la firma e la carica su App Store Connect
+# (TestFlight). Nel repository pubblico i minuti su Mac sono gratuiti.
+# Si avvia a mano: scheda Actions → "App iPhone e iPad" → Run workflow.
+# Servono 5 segreti (Settings → Secrets and variables → Actions):
+#   APPLE_TEAM_ID, APP_BUNDLE_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8
+name: App iPhone e iPad
+
+on:
+  workflow_dispatch:
+
+jobs:
+  appstore:
+    runs-on: macos-15
+    env:
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      BUNDLE_ID: ${{ secrets.APP_BUNDLE_ID }}
+      KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scegli Xcode 26 o successivo
+        run: |
+          XC=$(ls -d /Applications/Xcode_2[6-9]*.app 2>/dev/null | sort -V | tail -n 1)
+          if [ -z "$XC" ]; then echo "::error::Xcode 26 non trovato su questo Mac di GitHub"; ls /Applications | grep Xcode; exit 1; fi
+          sudo xcode-select -s "$XC/Contents/Developer"
+          xcodebuild -version
+
+      - name: Genera il progetto Xcode
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Verifica (compila senza firma)
+        run: |
+          set -o pipefail
+          xcodebuild -project ArnoClick.xcodeproj -scheme ArnoClick \
+            -destination 'generic/platform=iOS' -configuration Release \
+            -derivedDataPath "$RUNNER_TEMP/verifica" \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 40
+
+      - name: Controlla i segreti Apple
+        id: check
+        run: |
+          if [ -n "$TEAM_ID" ] && [ -n "$BUNDLE_ID" ] && [ -n "$KEY_ID" ] && [ -n "$ISSUER_ID" ] && [ -n "$KEY_P8" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Segreti Apple mancanti: l'app si compila ma non viene caricata."
+          fi
+
+      - name: Archivia e firma
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s' "$KEY_P8" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+          xcodebuild -project ArnoClick.xcodeproj -scheme ArnoClick \
+            -destination 'generic/platform=iOS' -configuration Release \
+            -archivePath "$RUNNER_TEMP/ArnoClick.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            archive | tail -n 60
+
+      - name: Carica su App Store Connect
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/export.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/ArnoClick.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" | tail -n 60
+          echo "::notice::Caricata la build ${{ github.run_number }}: tra 10-30 minuti la trovi in App Store Connect → TestFlight."
