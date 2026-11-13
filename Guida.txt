@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.99) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (3.0.0) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.99/ArnoClick-2.9.99-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.0/ArnoClick-3.0.0-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.99/ArnoClick-2.9.99-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.0/ArnoClick-3.0.0-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -242,9 +242,12 @@ mixer come canali separati.
   o mono. Le scelte restano memorizzate.
 - Vale per l'ascolto, anche nel confronto originale/tempo fisso; i
   file esportati (WAV, MIDI) non cambiano.
-Se il riquadro dice che la scheda ha più uscite ma il motore audio ne
-vede solo 2, musica e click restano su 1-2: in quel caso va aggiornata
-l'app.
+Con le uscite separate accese il suono lo produce direttamente l'app
+(motore audio del Mac o dell'iPhone), che usa tutte le uscite della
+scheda; la pagina continua a tenere il tempo per cursore, LED e loop.
+Al primo ascolto di un brano l'app riceve musica e click: può comparire
+per un attimo "⏳ Preparo le uscite separate…".
+Sul Mac le uscite separate richiedono macOS 10.15 Catalina o successivo.
 
 ------------------------------------------------------------------------
 SELEZIONARE UN TRATTO SULLE TRACCE

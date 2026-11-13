@@ -51,7 +51,8 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         let name = session.currentRoute.outputs.first?.portName ?? ""
         let obj: [String: Any] = ["name": name,
                                   "channels": max(session.outputNumberOfChannels, 2),
-                                  "max": session.maximumOutputNumberOfChannels]
+                                  "max": session.maximumOutputNumberOfChannels,
+                                  "engine": NativeOut.supported]
         guard let d = try? JSONSerialization.data(withJSONObject: obj),
               let json = String(data: d, encoding: .utf8) else { return }
         webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(json))", completionHandler: nil)
@@ -64,6 +65,8 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         // Ascolto dal vivo: la sessione audio passa a "registrazione e ascolto" (altoparlante, non auricolare)
         // e torna alla sola riproduzione quando l'ascolto finisce.
         if message.name == "outs" {
+            if let body = message.body as? [String: Any] { NativeOut.shared.handle(body); return }
+            NativeOut.shared.onChange = { [weak self] in self?.sendOutputs() }
             // Uscite audio: con una scheda audio USB chiede tutte le sue uscite (non solo 2)
             // e manda alla pagina il nome e il numero di uscite; si ripete a ogni cambio di collegamento.
             applyOutputChannels()

@@ -135,7 +135,11 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
 
     /// Manda alla pagina la scheda audio di uscita attuale (nome e numero di uscite).
     func sendOutputs() {
-        webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(AudioOutputs.json()))", completionHandler: nil)
+        let c = AudioOutputs.current()
+        let obj: [String: Any] = ["name": c.name, "channels": c.channels, "engine": NativeOut.supported]
+        guard let d = try? JSONSerialization.data(withJSONObject: obj),
+              let json = String(data: d, encoding: .utf8) else { return }
+        webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(json))", completionHandler: nil)
     }
 
     func userContentController(_ userContentController: WKUserContentController,
@@ -145,8 +149,11 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
             return
         }
         if message.name == "outs" {
-            // Uscite audio: la pagina chiede nome e numero di uscite della scheda audio attuale
+            // Uscite audio separate: comandi per il motore nativo (carica, suona, ferma, volumi, mappa)
+            if let body = message.body as? [String: Any] { NativeOut.shared.handle(body); return }
+            // …oppure la pagina chiede nome e numero di uscite della scheda audio attuale
             sendOutputs()
+            NativeOut.shared.onChange = { [weak self] in self?.sendOutputs() }
             AudioOutputs.listen { [weak self] in self?.sendOutputs() }
             return
         }
