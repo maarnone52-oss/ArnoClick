@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.97) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.98) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.97/ArnoClick-2.9.97-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.98/ArnoClick-2.9.98-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.97/ArnoClick-2.9.97-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.98/ArnoClick-2.9.98-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -218,14 +218,13 @@ WhatsApp può rifiutarlo, meglio AirDrop o un servizio come WeTransfer.
 SUONO DEL CLICK
 ------------------------------------------------------------------------
 Sei suoni a scelta: Classico, Legnetto, Campanaccio, Bacchette,
-Charleston, Elettronico ("Prova" per ascoltarli). Il suono accentato è
+Charleston, Elettronico (toccandone uno lo senti subito). Il suono accentato è
 una variante più acuta o più lunga dello stesso suono. Nel file MIDI si
 usa lo strumento di batteria più vicino (campanaccio = nota 56,
 bacchette = 37, charleston = 42 chiuso / 46 aperto, gli altri 76/77).
-Ogni suono ha il suo colore: tocca il pallino 🎨 a destra del tasto e
-scegli un colore dalla tavolozza (10 colori). Il tasto del suono scelto
-si accende pieno del suo colore, gli altri hanno scritta e bordo di quel
-colore. I colori restano memorizzati.
+Ogni suono ha il suo colore: Classico giallo, Legnetto arancio,
+Campanaccio rosso, Bacchette verde, Charleston turchese, Elettronico
+viola. Il tasto del suono scelto si accende pieno del suo colore.
 
 ------------------------------------------------------------------------
 SELEZIONARE UN TRATTO SULLE TRACCE
