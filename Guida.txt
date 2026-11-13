@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.82) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.83) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.82/ArnoClick-2.9.82-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.83/ArnoClick-2.9.83-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.82/ArnoClick-2.9.82-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.83/ArnoClick-2.9.83-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -270,6 +270,28 @@ continua da lì. Se il punto è prima dell'Inizio, il brano suona fino al
 loop e poi gira dentro il loop; se è dopo la Fine, suona fino alla fine
 del brano. Il loop resta acceso. Anche il tasto Play parte dal punto in
 cui si trova il cursore.
+
+------------------------------------------------------------------------
+EDITOR DEL CLICK
+------------------------------------------------------------------------
+Tutte le funzioni di postproduzione del click sono raccolte nell'area
+"🛠 Editor del click", che si apre e si chiude col grande pulsante verde
+"🛠 EDITOR DEL CLICK" sotto la sezione Loop. All'apertura di un brano
+l'editor è chiuso: si vedono la forma d'onda con le battute, il loop e
+il resto come sempre.
+Dentro l'editor:
+- il grafico "Andamento del tempo" (curva rossa e verde, sganciabile);
+  nell'interfaccia a pannelli resta una traccia della timeline, visibile
+  solo con l'editor aperto;
+- l'area di modifica arancione (▶ ascolto in loop, Inizio area, Fine
+  area, ✕);
+- la Risoluzione dell'analisi e "🩹 Correggi i picchi" / "↶ Annulla";
+- la Taratura del click (fader dell'area e di tutto il brano);
+- "⟲ Azzera i 7 cursori", "✔ Applica la modifica" e l'archivio delle
+  modifiche applicate.
+Selezionando un tratto sulle tracce e scegliendo "🟧 Area di modifica
+del click" l'editor si apre da solo. Chiudendolo, le modifiche restano
+attive (si sentono e si esportano): l'editor nasconde solo i comandi.
 
 ------------------------------------------------------------------------
 IL FILE MIDI DEL CLICK
