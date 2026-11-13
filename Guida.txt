@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.83) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.84) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.83/ArnoClick-2.9.83-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.84/ArnoClick-2.9.84-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.83/ArnoClick-2.9.83-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.84/ArnoClick-2.9.84-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -274,6 +274,8 @@ cui si trova il cursore.
 ------------------------------------------------------------------------
 EDITOR DEL CLICK
 ------------------------------------------------------------------------
+(La "Risoluzione dell'analisi" sta nel riquadro Tempo, insieme a
+Ricalcola, ÷2, ×2 e Automatico.)
 Tutte le funzioni di postproduzione del click sono raccolte nell'area
 "🛠 Editor del click", che si apre e si chiude col grande pulsante verde
 "🛠 EDITOR DEL CLICK" sotto la sezione Loop. All'apertura di un brano
@@ -285,7 +287,7 @@ Dentro l'editor:
   solo con l'editor aperto;
 - l'area di modifica arancione (▶ ascolto in loop, Inizio area, Fine
   area, ✕);
-- la Risoluzione dell'analisi e "🩹 Correggi i picchi" / "↶ Annulla";
+- "🩹 Correggi i picchi" / "↶ Annulla";
 - la Taratura del click (fader dell'area e di tutto il brano);
 - "⟲ Azzera i 7 cursori", "✔ Applica la modifica" e l'archivio delle
   modifiche applicate.
@@ -467,7 +469,7 @@ ZOOM
 - ✕ accanto a "Inizio area" e "Fine area" elimina i due marker
   arancioni. Una prova non ancora applicata si annulla; le modifiche già
   applicate restano nell'archivio.
-- "🩹 Correggi i picchi" (sotto Risoluzione dell'analisi): trova i
+- "🩹 Correggi i picchi" (nell'Editor del click): trova i
   battiti rilevati fuori posto, cioè i picchi isolati e improvvisi della
   curva rossa dovuti a errori di decodifica, e li rimette dove indicano
   i battiti vicini (il numero dei battiti non cambia). Con i marker
