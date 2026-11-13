@@ -64,6 +64,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         contentController.add(self, name: "save")
         contentController.add(self, name: "menuLang")
         contentController.add(self, name: "convert")
+        contentController.add(self, name: "outs")
 
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -132,10 +133,21 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
 
     // MARK: - Salvataggio dei file esportati (MIDI, WAV)
 
+    /// Manda alla pagina la scheda audio di uscita attuale (nome e numero di uscite).
+    func sendOutputs() {
+        webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(AudioOutputs.json()))", completionHandler: nil)
+    }
+
     func userContentController(_ userContentController: WKUserContentController,
                                didReceive message: WKScriptMessage) {
         if message.name == "menuLang", let l = message.body as? String {
             onLanguage?(l)
+            return
+        }
+        if message.name == "outs" {
+            // Uscite audio: la pagina chiede nome e numero di uscite della scheda audio attuale
+            sendOutputs()
+            AudioOutputs.listen { [weak self] in self?.sendOutputs() }
             return
         }
         if message.name == "convert", let action = message.body as? String {

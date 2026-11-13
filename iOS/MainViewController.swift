@@ -11,6 +11,7 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         let contentController = WKUserContentController()
         contentController.add(self, name: "save")
         contentController.add(self, name: "mic")
+        contentController.add(self, name: "outs")
 
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -35,12 +36,48 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
+    // MARK: - Uscite audio multiple (scheda audio USB)
+
+    private var watchingRoute = false
+
+    private func applyOutputChannels() {
+        let session = AVAudioSession.sharedInstance()
+        let maxOut = session.maximumOutputNumberOfChannels
+        if maxOut > 2 { try? session.setPreferredOutputNumberOfChannels(maxOut) }
+    }
+
+    private func sendOutputs() {
+        let session = AVAudioSession.sharedInstance()
+        let name = session.currentRoute.outputs.first?.portName ?? ""
+        let obj: [String: Any] = ["name": name,
+                                  "channels": max(session.outputNumberOfChannels, 2),
+                                  "max": session.maximumOutputNumberOfChannels]
+        guard let d = try? JSONSerialization.data(withJSONObject: obj),
+              let json = String(data: d, encoding: .utf8) else { return }
+        webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(json))", completionHandler: nil)
+    }
+
     // MARK: - Salvataggio dei file esportati (MIDI, WAV)
 
     func userContentController(_ userContentController: WKUserContentController,
                                didReceive message: WKScriptMessage) {
         // Ascolto dal vivo: la sessione audio passa a "registrazione e ascolto" (altoparlante, non auricolare)
         // e torna alla sola riproduzione quando l'ascolto finisce.
+        if message.name == "outs" {
+            // Uscite audio: con una scheda audio USB chiede tutte le sue uscite (non solo 2)
+            // e manda alla pagina il nome e il numero di uscite; si ripete a ogni cambio di collegamento.
+            applyOutputChannels()
+            sendOutputs()
+            if !watchingRoute {
+                watchingRoute = true
+                NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification,
+                                                       object: nil, queue: .main) { [weak self] _ in
+                    self?.applyOutputChannels()
+                    self?.sendOutputs()
+                }
+            }
+            return
+        }
         if message.name == "mic" {
             let on = (message.body as? Bool) ?? false
             let session = AVAudioSession.sharedInstance()
@@ -51,6 +88,8 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
                 try? session.setCategory(.playback, mode: .default, options: [])
             }
             try? session.setActive(true)
+            applyOutputChannels()
+            if watchingRoute { sendOutputs() }
             return
         }
         guard message.name == "save",

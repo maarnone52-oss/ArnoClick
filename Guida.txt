@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.98) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.99) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.98/ArnoClick-2.9.98-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.99/ArnoClick-2.9.99-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.98/ArnoClick-2.9.98-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.99/ArnoClick-2.9.99-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -225,6 +225,26 @@ bacchette = 37, charleston = 42 chiuso / 46 aperto, gli altri 76/77).
 Ogni suono ha il suo colore: Classico giallo, Legnetto arancio,
 Campanaccio rosso, Bacchette verde, Charleston turchese, Elettronico
 viola. Il tasto del suono scelto si accende pieno del suo colore.
+
+------------------------------------------------------------------------
+USCITE AUDIO (solo app per Mac e per iPhone/iPad)
+------------------------------------------------------------------------
+Con una scheda audio USB a più uscite (per esempio il mixer Soundcraft
+Ui24R) musica e click possono uscire su uscite diverse, e arrivare al
+mixer come canali separati.
+- Collega la scheda. Sul Mac sceglila come uscita in Preferenze di
+  Sistema › Suono › Uscita, poi riapri ARNOCLICK. Su iPhone e iPad
+  basta collegarla.
+- Nel riquadro "Uscite audio" compaiono il nome della scheda e quante
+  uscite ARNOCLICK può usare.
+- Accendi "🔀 Uscite separate" e scegli per la Musica e per il Click
+  l'uscita (1-2, 3-4… in stereo, oppure 1, 2, 3… in mono) e se stereo
+  o mono. Le scelte restano memorizzate.
+- Vale per l'ascolto, anche nel confronto originale/tempo fisso; i
+  file esportati (WAV, MIDI) non cambiano.
+Se il riquadro dice che la scheda ha più uscite ma il motore audio ne
+vede solo 2, musica e click restano su 1-2: in quel caso va aggiornata
+l'app.
 
 ------------------------------------------------------------------------
 SELEZIONARE UN TRATTO SULLE TRACCE
