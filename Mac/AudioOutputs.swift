@@ -40,6 +40,31 @@ enum AudioOutputs {
         return (name, max(channels, 2))
     }
 
+    /// Numero di canali d'ingresso dell'ingresso predefinito del Mac (0 = nessuno).
+    static func inputChannels() -> Int {
+        var dev = AudioDeviceID(0)
+        var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var addr = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyDefaultInputDevice,
+                                              mScope: kAudioObjectPropertyScopeGlobal,
+                                              mElement: 0)
+        guard AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil, &size, &dev) == noErr,
+              dev != 0 else { return 0 }
+        var channels = 0
+        addr.mSelector = kAudioDevicePropertyStreamConfiguration
+        addr.mScope = kAudioDevicePropertyScopeInput
+        size = 0
+        if AudioObjectGetPropertyDataSize(dev, &addr, 0, nil, &size) == noErr, size > 0 {
+            let raw = UnsafeMutableRawPointer.allocate(byteCount: Int(size),
+                                                       alignment: MemoryLayout<AudioBufferList>.alignment)
+            defer { raw.deallocate() }
+            if AudioObjectGetPropertyData(dev, &addr, 0, nil, &size, raw) == noErr {
+                let list = UnsafeMutableAudioBufferListPointer(raw.assumingMemoryBound(to: AudioBufferList.self))
+                for b in list { channels += Int(b.mNumberChannels) }
+            }
+        }
+        return channels
+    }
+
     /// Chiama `changed` sul thread principale quando cambia l'uscita predefinita del Mac.
     static func listen(_ changed: @escaping () -> Void) {
         guard !listening else { return }

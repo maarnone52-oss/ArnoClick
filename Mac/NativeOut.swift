@@ -44,6 +44,21 @@ final class NativeOut {
     private var rM = 0, rMst = true, rC = 2, rCst = false
     private var shot: Slot?, shotPos = 0.0
 
+    // Ingressi della scheda audio (per suonare sulla base): due canali scelti, mandati alle uscite scelte
+    private(set) var inOn = false
+    private var inA = 0, inB = 1, inGain: Float = 1, inOut = 0, inOutSt = true
+    private var sink: AVAudioNode?
+    private var needRebuild = false
+    private let ringSize = 16384
+    private let ringA = UnsafeMutablePointer<Float>.allocate(capacity: 16384)
+    private let ringB = UnsafeMutablePointer<Float>.allocate(capacity: 16384)
+    private var ringW = 0, ringR = 0
+    private let ringLock: UnsafeMutablePointer<os_unfair_lock> = {
+        let p = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1); p.initialize(to: os_unfair_lock()); return p
+    }()
+    /// Numero di canali d'ingresso visti dal motore (0 = nessuno)
+    private(set) var inChannels = 0
+
     static var supported: Bool {
         if #available(macOS 10.15, iOS 13.0, *) { return true }
         return false
@@ -57,18 +72,27 @@ final class NativeOut {
         guard NativeOut.supported else { return false }
         #if os(iOS)
         let s = AVAudioSession.sharedInstance()
-        if s.maximumOutputNumberOfChannels > 2 { try? s.setPreferredOutputNumberOfChannels(s.maximumOutputNumberOfChannels) }
+        if inOn {
+            if s.category != .playAndRecord {
+                try? s.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothA2DP])
+            }
+            try? s.setPreferredIOBufferDuration(0.005)
+        }
         try? s.setActive(true)
+        if s.maximumOutputNumberOfChannels > 2 { try? s.setPreferredOutputNumberOfChannels(s.maximumOutputNumberOfChannels) }
+        if inOn && s.maximumInputNumberOfChannels > 1 { try? s.setPreferredInputNumberOfChannels(s.maximumInputNumberOfChannels) }
         #endif
         let hw = engine.outputNode.outputFormat(forBus: 0)
         let n = max(2, Int(hw.channelCount))
         let rate = hw.sampleRate > 0 ? hw.sampleRate : 48000
-        if source != nil && n == channels && rate == hwRate {
+        if source != nil && n == channels && rate == hwRate && !needRebuild && (sink != nil) == inOn {
             if !engine.isRunning { try? engine.start() }
             return engine.isRunning
         }
         engine.stop()
         if let old = source { engine.detach(old); source = nil }
+        if let old = sink { engine.disconnectNodeInput(old); engine.detach(old); sink = nil }
+        needRebuild = false
         channels = n; hwRate = rate
         let fmt: AVAudioFormat?
         if n <= 2 {
@@ -85,12 +109,34 @@ final class NativeOut {
             engine.attach(node)
             engine.connect(node, to: engine.outputNode, format: format)
             source = node
+            inChannels = 0
+            if inOn {
+                let inFmt = engine.inputNode.outputFormat(forBus: 0)
+                if inFmt.channelCount > 0 && inFmt.sampleRate > 0 {
+                    inChannels = Int(inFmt.channelCount)
+                    let sk = AVAudioSinkNode { [unowned self] _, frameCount, abl -> OSStatus in
+                        self.capture(Int(frameCount), UnsafePointer(abl))
+                        return noErr
+                    }
+                    engine.attach(sk)
+                    engine.connect(engine.inputNode, to: sk, format: inFmt)
+                    sink = sk
+                    #if os(macOS)
+                    // buffer piccolo: meno ritardo tra lo strumento e l'ascolto
+                    if let au = engine.outputNode.audioUnit {
+                        var frames: UInt32 = 128
+                        AudioUnitSetProperty(au, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0,
+                                             &frames, UInt32(MemoryLayout<UInt32>.size))
+                    }
+                    #endif
+                }
+            }
         }
         if !observing {
             observing = true
             NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main) { [weak self] _ in
                 guard let self = self else { return }
-                if let old = self.source { self.engine.detach(old); self.source = nil }
+                self.needRebuild = true
                 self.prepare()
                 self.onChange?()
             }
@@ -148,6 +194,29 @@ final class NativeOut {
         case "shot":
             prepare()
             lock(); shot = slots["t"]; shotPos = 0; unlock()
+        case "input":
+            let on = (b["on"] as? Bool) ?? false
+            inA = max(0, Int(num("a"))); inB = Int(num("b")); inGain = Float(num("gain"))
+            inOut = max(0, Int(num("out"))); inOutSt = (b["om"] as? String) != "mono"
+            if on != inOn {
+                inOn = on
+                needRebuild = true
+                lockRing(); ringW = 0; ringR = 0; unlockRing()
+                if on {
+                    #if os(iOS)
+                    AVAudioSession.sharedInstance().requestRecordPermission { _ in
+                        DispatchQueue.main.async { self.prepare(); self.onChange?() }
+                    }
+                    #else
+                    prepare(); onChange?()
+                    #endif
+                } else {
+                    #if os(iOS)
+                    try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                    #endif
+                    prepare(); onChange?()
+                }
+            }
         case "drop":
             lock(); playing = false; shot = nil; slots.removeAll(); unlock()
             partial.removeAll()
@@ -155,7 +224,56 @@ final class NativeOut {
         }
     }
 
+    private func lockRing() { os_unfair_lock_lock(ringLock) }
+    private func unlockRing() { os_unfair_lock_unlock(ringLock) }
+
     // MARK: - Thread audio
+
+    /// Riceve l'audio degli ingressi e lo mette da parte per l'uscita.
+    private func capture(_ n: Int, _ abl: UnsafePointer<AudioBufferList>) {
+        let list = UnsafeMutableAudioBufferListPointer(UnsafeMutablePointer(mutating: abl))
+        var pa: UnsafeMutablePointer<Float>? = nil, pb: UnsafeMutablePointer<Float>? = nil
+        var idx = 0
+        // formato non interlacciato: un buffer per canale
+        for b in list {
+            if idx == inA { pa = b.mData?.assumingMemoryBound(to: Float.self) }
+            if idx == inB { pb = b.mData?.assumingMemoryBound(to: Float.self) }
+            idx += 1
+            if idx > max(inA, inB) { break }
+        }
+        guard let a = pa else { return }
+        let bch = pb
+        let mask = ringSize - 1
+        os_unfair_lock_lock(ringLock)
+        for i in 0..<n {
+            let w = (ringW + i) & mask
+            ringA[w] = a[i]
+            ringB[w] = bch?[i] ?? a[i]
+        }
+        ringW += n
+        if ringW - ringR > ringSize { ringR = ringW - ringSize }
+        os_unfair_lock_unlock(ringLock)
+    }
+
+    /// Mette l'audio degli ingressi nelle uscite scelte (pochi millisecondi di ritardo).
+    private func mixInputs(_ n: Int, _ nOut: Int) {
+        guard inOn, sink != nil, os_unfair_lock_trylock(ringLock) else { return }
+        defer { os_unfair_lock_unlock(ringLock) }
+        var avail = ringW - ringR
+        if avail > n * 3 { ringR = ringW - n; avail = n }   // non lasciare crescere il ritardo
+        let k = min(n, avail)
+        if k <= 0 { return }
+        let mask = ringSize - 1
+        let o0 = min(inOut, nOut - 1), o1 = min(inOut + 1, nOut - 1)
+        let two = inB >= 0 && inB != inA
+        for f in 0..<k {
+            let r = (ringR + f) & mask
+            let va = ringA[r] * inGain, vb = (two ? ringB[r] : ringA[r]) * inGain
+            if inOutSt && o1 != o0 { outs[o0][f] += va; outs[o1][f] += vb }
+            else { outs[o0][f] += two ? (va + vb) * 0.5 : va }
+        }
+        ringR += k
+    }
 
     @inline(__always) private func sample(_ s: Slot, _ p: Double, _ c: Int) -> Float {
         let i = Int(p)
@@ -175,6 +293,7 @@ final class NativeOut {
             p.initialize(repeating: 0, count: cnt)
             outs[nOut] = p; nOut += 1
         }
+        if nOut > 0 { mixInputs(n, nOut) }
         guard nOut > 0, os_unfair_lock_trylock(lockP) else { return }
         defer { os_unfair_lock_unlock(lockP) }
         let m0 = min(rM, nOut - 1), m1 = min(rM + 1, nOut - 1), c0 = min(rC, nOut - 1), c1 = min(rC + 1, nOut - 1)

@@ -52,7 +52,10 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         let obj: [String: Any] = ["name": name,
                                   "channels": max(session.outputNumberOfChannels, 2),
                                   "max": session.maximumOutputNumberOfChannels,
-                                  "engine": NativeOut.supported]
+                                  "engine": NativeOut.supported,
+                                  "inputs": NativeOut.shared.inOn ? max(NativeOut.shared.inChannels, session.inputNumberOfChannels)
+                                                                  : session.maximumInputNumberOfChannels,
+                                  "inOn": NativeOut.shared.inOn]
         guard let d = try? JSONSerialization.data(withJSONObject: obj),
               let json = String(data: d, encoding: .utf8) else { return }
         webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(json))", completionHandler: nil)
@@ -91,6 +94,7 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
                 try? session.setCategory(.playback, mode: .default, options: [])
             }
             try? session.setActive(true)
+            if !on && NativeOut.shared.inOn { NativeOut.shared.prepare() }   // ingressi accesi: resta in registrazione e ascolto
             applyOutputChannels()
             if watchingRoute { sendOutputs() }
             return

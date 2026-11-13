@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (3.0.0) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (3.0.1) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.0/ArnoClick-3.0.0-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.1/ArnoClick-3.0.1-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.0/ArnoClick-3.0.0-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-3.0.1/ArnoClick-3.0.1-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -227,7 +227,7 @@ Campanaccio rosso, Bacchette verde, Charleston turchese, Elettronico
 viola. Il tasto del suono scelto si accende pieno del suo colore.
 
 ------------------------------------------------------------------------
-USCITE AUDIO (solo app per Mac e per iPhone/iPad)
+USCITE E INGRESSI AUDIO (solo app per Mac e per iPhone/iPad)
 ------------------------------------------------------------------------
 Con una scheda audio USB a più uscite (per esempio il mixer Soundcraft
 Ui24R) musica e click possono uscire su uscite diverse, e arrivare al
@@ -248,6 +248,22 @@ scheda; la pagina continua a tenere il tempo per cursore, LED e loop.
 Al primo ascolto di un brano l'app riceve musica e click: può comparire
 per un attimo "⏳ Preparo le uscite separate…".
 Sul Mac le uscite separate richiedono macOS 10.15 Catalina o successivo.
+
+INGRESSI (per suonare sulla base con il click)
+Nello stesso riquadro, "🎸 Ingressi" fa sentire lo strumento collegato
+agli ingressi della scheda audio insieme a base e click.
+- Accendi "🎸 Ingressi" (la prima volta l'app chiede il permesso di
+  usare il microfono/gli ingressi: rispondi Consenti).
+- Ingresso 1 e Ingresso 2: i due canali d'ingresso da usare (uno stereo
+  o due separati); con "—" sull'Ingresso 2 si usa un solo ingresso.
+- Verso: l'uscita dove mandarli (stereo: Ingresso 1 a sinistra e
+  Ingresso 2 a destra; mono: sommati) e il Volume.
+- Sul Mac la scheda va scelta sia come Uscita sia come Ingresso
+  (Preferenze di Sistema › Suono), poi si riapre ARNOCLICK.
+- C'è un piccolo ritardo (pochi millesimi di secondo); usa le cuffie per
+  evitare fischi. Gli ingressi si spengono a ogni riapertura dell'app.
+Con un mixer come la Ui24R lo strumento si può anche ascoltare
+direttamente dal mixer, senza nessun ritardo.
 
 ------------------------------------------------------------------------
 SELEZIONARE UN TRATTO SULLE TRACCE

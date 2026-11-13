@@ -136,7 +136,10 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
     /// Manda alla pagina la scheda audio di uscita attuale (nome e numero di uscite).
     func sendOutputs() {
         let c = AudioOutputs.current()
-        let obj: [String: Any] = ["name": c.name, "channels": c.channels, "engine": NativeOut.supported]
+        let obj: [String: Any] = ["name": c.name, "channels": c.channels, "engine": NativeOut.supported,
+                                  "inputs": NativeOut.shared.inOn && NativeOut.shared.inChannels > 0 ? NativeOut.shared.inChannels
+                                                                                                    : AudioOutputs.inputChannels(),
+                                  "inOn": NativeOut.shared.inOn]
         guard let d = try? JSONSerialization.data(withJSONObject: obj),
               let json = String(data: d, encoding: .utf8) else { return }
         webView?.evaluateJavaScript("window.arnoOuts&&arnoOuts(\(json))", completionHandler: nil)
