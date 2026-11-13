@@ -4,8 +4,8 @@ ARNOCLICK per Mac (da macOS 10.13 High Sierra in poi)
 ARNOCLICK ricava il tempo (BPM) e il click, audio e MIDI, da un brano
 audio o video.
 Funziona su macOS 10.13 High Sierra e successivi, Mac Intel e chip Apple.
-Per macOS Catalina e successivi è consigliata la versione 2.9.88:
-https://github.com/maarnone52-oss/ArnoClick/releases/tag/mac-2.9.88
+Per macOS Catalina e successivi è consigliata la versione 2.9.89:
+https://github.com/maarnone52-oss/ArnoClick/releases/tag/mac-2.9.89
 
 
 PRIMA DI TUTTO (solo High Sierra e Mojave)
