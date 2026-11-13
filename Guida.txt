@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.74) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.75) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.74/ArnoClick-2.9.74-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.75/ArnoClick-2.9.75-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.74/ArnoClick-2.9.74-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.75/ArnoClick-2.9.75-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -305,8 +305,8 @@ FINESTRA "ANDAMENTO DEL TEMPO" SGANCIABILE
 ZOOM
 ------------------------------------------------------------------------
 - "🎯 Segui" / "🎯 Libero" (accanto a Zoom, e nella finestra mobile del
-  grafico): con "Segui" (verde) durante l'ascolto il cursore resta al
-  centro e tracce e grafici scorrono con lui. Con "Libero" la vista resta
+  grafico): con "Segui" (verde) durante l'ascolto la vista avanza
+  insieme al cursore, come è sempre stato. Con "Libero" la vista resta
   dove la porti: mentre ascolti puoi scorrere avanti e indietro e
   guardare altre parti del brano senza che la vista torni al cursore.
   La scelta viene ricordata.
