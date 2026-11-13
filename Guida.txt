@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.84) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.85) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.84/ArnoClick-2.9.84-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.85/ArnoClick-2.9.85-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.84/ArnoClick-2.9.84-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.85/ArnoClick-2.9.85-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -277,8 +277,10 @@ EDITOR DEL CLICK
 (La "Risoluzione dell'analisi" sta nel riquadro Tempo, insieme a
 Ricalcola, ÷2, ×2 e Automatico.)
 Tutte le funzioni di postproduzione del click sono raccolte nell'area
-"🛠 Editor del click", che si apre e si chiude col grande pulsante verde
-"🛠 EDITOR DEL CLICK" sotto la sezione Loop. All'apertura di un brano
+"🛠 Editor del click" (riquadrato in arancione), che si apre col grande
+pulsante arancione "🛠 EDITOR DEL CLICK" sotto la sezione Loop; aperto,
+il pulsante si illumina di arancione, si rimpicciolisce e diventa
+"✕ ESCI DALL'EDITOR". All'apertura di un brano
 l'editor è chiuso: si vedono la forma d'onda con le battute, il loop e
 il resto come sempre.
 Dentro l'editor:
