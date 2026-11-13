@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.78) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.79) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.78/ArnoClick-2.9.78-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.79/ArnoClick-2.9.79-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.78/ArnoClick-2.9.78-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.79/ArnoClick-2.9.79-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -270,6 +270,38 @@ continua da lì. Se il punto è prima dell'Inizio, il brano suona fino al
 loop e poi gira dentro il loop; se è dopo la Fine, suona fino alla fine
 del brano. Il loop resta acceso. Anche il tasto Play parte dal punto in
 cui si trova il cursore.
+
+------------------------------------------------------------------------
+CURVA ROSSA E CURVA VERDE (GRAFICO "ANDAMENTO DEL TEMPO")
+------------------------------------------------------------------------
+Il grafico mostra il tempo (in BPM) lungo il brano: la linea rossa è
+quello della musica, la verde quello del click. La stessa spiegazione si
+apre col tasto "❓ Curve" nella Taratura del click (e con ❓ nella
+finestra mobile del grafico): compare una finestra che si sovrappone,
+si sposta trascinando la barra in alto e si chiude con ✕.
+
+- Curva rossa: il tempo del brano. È il tempo dei musicisti, misurato
+  dall'analisi: ARNOCLICK trova i colpi nella traccia e a ogni battito
+  calcola il BPM (medio sugli ultimi 4 battiti). Con lo zoom stretto i
+  pallini rossi sono i singoli battiti trovati. Le salite e discese
+  dolci sono vere (il brano accelera o rallenta); i picchi isolati e
+  improvvisi di solito sono errori di rilevamento (un colpo scambiato
+  per un altro): sono i punti da sistemare con l'area arancione.
+- Curva verde: il tempo del click. È il tempo del click che senti ed
+  esporti (WAV e MIDI), calcolato battito per battito dalla distanza fra
+  un click e il successivo. La cambiano tutte le regolazioni: Andamento,
+  Allineamento e Slittamento su tutto il brano, e nelle aree arancioni
+  Ammorbidimento, Oscillazioni, Tempo e Slittamento.
+- Linea gialla tratteggiata: il BPM medio del brano (nell'anteprima del
+  brano a tempo fisso è il tempo di destinazione).
+Come leggerle insieme:
+- verde vicina alla rossa: il click segue i cambi di tempo dei musicisti;
+- rossa con un picco e verde liscia: il click ha ignorato un probabile
+  errore dell'analisi, di solito è giusto così;
+- verde in ritardo o in anticipo sui cambi della rossa: usa lo
+  Slittamento per farli coincidere;
+- Andamento al massimo ("fisso"): la verde è piatta, un metronomo
+  costante.
 
 ------------------------------------------------------------------------
 FINESTRA "ANDAMENTO DEL TEMPO" SGANCIABILE
