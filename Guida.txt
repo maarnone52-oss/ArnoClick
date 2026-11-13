@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.89) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.90) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.89/ArnoClick-2.9.89-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.90/ArnoClick-2.9.90-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.89/ArnoClick-2.9.89-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.90/ArnoClick-2.9.90-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -637,10 +637,10 @@ a destra le impostazioni (tempo, battuta e accento, suono, mixer,
 sincronia LED, esportazioni), in basso la barra con i messaggi.
 Il brano è mostrato come una timeline a tracce, tutte allineate e con
 lo stesso zoom: righello (battute, marker Inizio/Fine da trascinare,
-loop), audio, click (accenti in rosso), andamento BPM, griglia fissa
-(verde = battiti a tempo costante, grigio = battiti del brano, così si
-vede quanto il brano si scosta) e mappa di tutto il brano (clic o
-trascina per spostarti). I pulsanti M silenziano audio o click solo
+loop), audio, click (accenti in rosso), andamento BPM (con l'Editor del
+click aperto) e mappa di tutto il brano (clic o trascina per spostarti).
+Ogni traccia, mappa compresa, si allunga o si accorcia trascinando il
+bordo in basso della sua testata; doppio clic sul nome per comprimerla. I pulsanti M silenziano audio o click solo
 durante l'ascolto: le esportazioni non cambiano.
 Sotto i nomi delle tracce Audio e Click ci sono i VU meter (L e R per
 l'audio stereo, uno per il click): verde fino a -12 dB, giallo fino a
