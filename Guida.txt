@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.75) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.76) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.75/ArnoClick-2.9.75-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.76/ArnoClick-2.9.76-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.75/ArnoClick-2.9.75-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.76/ArnoClick-2.9.76-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -400,6 +400,10 @@ ZOOM
   "Click · tempo" (alza o abbassa il tempo del click nell'area fino a
   ±20%; attenzione: dopo l'area il click non è più allineato alla
   musica). Un doppio tocco riporta un cursore al valore normale.
+  Sotto il fader "Tempo" dell'area ci sono i tasti + e − per la
+  regolazione fine passo passo: ogni tocco cambia di 0,1% (trascinando
+  il fader si va a passi di 0,5%); tenuti premuti ripetono. Anche la
+  rotella del mouse sul fader va a passi di 0,1%.
   In tutte le versioni c'è il riquadro "Taratura del click" con fader verticali
   compatti: a sinistra, per l'area fra i marker arancioni, Ammorb.,
   Oscill. e Tempo; a destra, per tutto il brano, Andamento (Andam.) e
