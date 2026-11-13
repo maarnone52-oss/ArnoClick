@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.94) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.95) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.94/ArnoClick-2.9.94-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.95/ArnoClick-2.9.95-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.94/ArnoClick-2.9.94-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.95/ArnoClick-2.9.95-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -300,7 +300,9 @@ Dentro l'editor:
   sotto i pulsanti compaiono i limiti dell'area (tempo e battuta di
   inizio e fine, e la durata). Le bandierine arancioni dell'area si
   vedono e si trascinano solo nel grafico dell'Andamento del tempo,
-  non più sulla forma d'onda e sulle tracce della schermata principale;
+  non più sulla forma d'onda e sulle tracce della schermata principale,
+  né tra i marker della pagina principale (lì restano solo Inizio e
+  Fine; «Elimina» toglie solo quelli);
 - "🩹 Correggi i picchi" / "↶ Annulla";
 - la Taratura del click (fader dell'area e di tutto il brano);
 - "⟲ Azzera i 7 cursori", "✔ Applica la modifica" e l'archivio delle
