@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.81) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.82) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.81/ArnoClick-2.9.81-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.82/ArnoClick-2.9.82-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.81/ArnoClick-2.9.81-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.82/ArnoClick-2.9.82-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -270,6 +270,34 @@ continua da lì. Se il punto è prima dell'Inizio, il brano suona fino al
 loop e poi gira dentro il loop; se è dopo la Fine, suona fino alla fine
 del brano. Il loop resta acceso. Anche il tasto Play parte dal punto in
 cui si trova il cursore.
+
+------------------------------------------------------------------------
+IL FILE MIDI DEL CLICK
+------------------------------------------------------------------------
+La stessa spiegazione si apre col tasto "❓ MIDI" nel riquadro "Click
+corretto" della sezione Esporta (finestra che si sovrappone, si sposta
+dalla barra in alto, ✕ chiude).
+Il file .mid è un normale file MIDI (tipo 1, 480 tick per quarto) con
+due tracce.
+1. Traccia "Mappa tempo" (conduttore)
+- Tempo battito per battito: a ogni battito un evento di tempo con il
+  BPM esatto fino al battito successivo. Il sequencer segue ogni
+  variazione del click e la griglia della DAW coincide con il brano.
+- Tempo in chiave: le battute hanno i tempi impostati (es. 4/4); se il
+  primo tempo forte non è all'inizio c'è una prima battuta corta (es.
+  1/4 o 3/16), così il "1" cade sempre a inizio battuta.
+- Silenzio iniziale scritto in modo che il primo click cada esattamente
+  dove è nel brano.
+- Marker Inizio e Fine, se messi, come eventi Marker con il loro nome.
+2. Traccia "Click" (note)
+- Una nota per battito sul canale 10 (batteria General MIDI), su ogni
+  quarto della griglia, lunga un sedicesimo.
+- Note: Classico, Legno, Elettronico → accento 76, normale 77 (wood
+  block); Campanaccio 56; Bacchette 37 (side stick); Hi-hat → accento
+  46 (aperto), normale 42 (chiuso).
+- Velocità: normali 84; accentati secondo il volume dell'accento (fino
+  a 127); con l'accento a volume zero quei battiti mancano, come nel WAV.
+I click del MIDI sono gli stessi del WAV, negli stessi istanti.
 
 ------------------------------------------------------------------------
 CURVA ROSSA E CURVA VERDE (GRAFICO "ANDAMENTO DEL TEMPO")
