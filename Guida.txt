@@ -72,14 +72,14 @@ Su High Sierra e Mojave l'app usa il motore di Safari installato:
 aggiorna Safari all'ultima versione disponibile (13.1.2) da
 App Store > Aggiornamenti, altrimenti alcune parti non funzionano.
 La conversione dei video ("Converti video") lì può non essere disponibile.
-VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.86) - file di
+VERSIONE CONSIGLIATA PER CATALINA E SUCCESSIVI (2.9.87) - file di
 installazione (con zoom grafico, marker di area, ammorbidimento del click,
 risoluzione dell'analisi, archivio delle modifiche e dimensione
 regolabile dell'interfaccia):
   programma di installazione (si installa da solo in Applicazioni):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.86/ArnoClick-2.9.86-Catalina.pkg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.87/ArnoClick-2.9.87-Catalina.pkg
   oppure disco da aprire (trascina l'app su "Applicazioni"):
-  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.86/ArnoClick-2.9.86-Catalina.dmg
+  https://github.com/maarnone52-oss/ArnoClick/releases/download/mac-2.9.87/ArnoClick-2.9.87-Catalina.dmg
   La prima volta: clic destro sul file .pkg (o sull'app) > Apri > Apri.
   Sostituisce l'app ArnoClick già installata e ne conserva Recenti e
   impostazioni.
@@ -293,6 +293,10 @@ Dentro l'editor:
 - la Taratura del click (fader dell'area e di tutto il brano);
 - "⟲ Azzera i 7 cursori", "✔ Applica la modifica" e l'archivio delle
   modifiche applicate.
+Nell'app per Mac l'archivio delle modifiche applicate sta a destra della
+Taratura del click: sempre nell'interfaccia classica, in quella a
+pannelli quando la dimensione dell'interfaccia è sotto l'80% (Vista ›
+Dimensione interfaccia). Altrimenti sta sotto, dopo "Applica".
 Selezionando un tratto sulle tracce e scegliendo "🟧 Area di modifica
 del click" l'editor si apre da solo. Chiudendolo, le modifiche restano
 attive (si sentono e si esportano): l'editor nasconde solo i comandi.

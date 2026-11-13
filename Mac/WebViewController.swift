@@ -25,6 +25,8 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
 
     func applyScale(_ s: Double) {
         guard let wv = webView else { return }
+        // la pagina sa la dimensione dell'interfaccia (es. per affiancare archivio e taratura sotto l'80%)
+        wv.evaluateJavaScript("window.arnoUiScale=\(s);window.arnoScaleChanged&&arnoScaleChanged(\(s))", completionHandler: nil)
         if #available(macOS 11.0, *) {
             wv.pageZoom = CGFloat(s)
         } else {
