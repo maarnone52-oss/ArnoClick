@@ -27,6 +27,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
                           backing: .buffered, defer: false)
         window.title = "ARNOCLICK"
+        // niente barra delle schede (che ripeteva il nome ARNOCLICK sotto il titolo)
+        NSWindow.allowsAutomaticWindowTabbing = false
+        window.tabbingMode = .disallowed
         window.minSize = NSSize(width: 1000, height: 600)
         window.backgroundColor = NSColor(red: 0.051, green: 0.055, blue: 0.063, alpha: 1)
         window.contentViewController = controller
