@@ -2,6 +2,22 @@ ARNOCLICK — guida all'installazione
 © 2026 Maurizio Arnone. Tutti i diritti riservati.
 
 ------------------------------------------------------------------------
+NOVITÀ DELLA VERSIONE 3.1
+------------------------------------------------------------------------
+- Video: se ne usa solo l'audio, che diventa un WAV e va nell'archivio
+  "Estrazioni" (apri, rinomina, elimina). Nelle app iPhone/iPad/Mac
+  l'audio lo estrae il sistema e si leggono tutti i video dell'iPhone.
+- Dal vivo: BPM in tempo reale da microfono o scheda audio, con
+  registrazione facoltativa (nome a scelta, "Scarta e registra di
+  nuovo") oppure solo rilevamento.
+- Due loop indipendenti: generale (blu) e dell'area (arancione); gira
+  quello che contiene il cursore, il più interno se annidati.
+- Editor del click: traccia "Area di editing", zoom sull'area,
+  bandierine sul grafico, bilanciamento Musica/Click.
+- Zoom azzurro sotto la mappa del brano, scorrimento inerziale,
+  durata del brano, VU nei fader, esportazione "Solo musica (.wav)".
+
+------------------------------------------------------------------------
 PRIMA DI INIZIARE: COSA ASPETTARSI
 ------------------------------------------------------------------------
 ARNOCLICK ascolta una traccia audio (o l'audio di un video), riconosce i

@@ -51,6 +51,31 @@ jobs:
             echo "::warning::Segreti Apple mancanti: l'app si compila ma non viene caricata."
           fi
 
+      - name: Libera i certificati delle compilazioni precedenti
+        if: steps.check.outputs.ok == 'true'
+        # Ogni Mac di GitHub è nuovo e Xcode crea un certificato nuovo a ogni compilazione:
+        # Apple ne permette pochi, quindi prima si revocano quelli vecchi creati dal cloud.
+        # Le app già su App Store e su TestFlight non ne risentono.
+        run: |
+          python3 -m pip install -q --break-system-packages pyjwt cryptography 2>/dev/null || python3 -m pip install -q pyjwt cryptography
+          python3 - <<'PY'
+          import os, time, json, urllib.request, jwt
+          key=os.environ["KEY_P8"]; kid=os.environ["KEY_ID"]; iss=os.environ["ISSUER_ID"]
+          tok=jwt.encode({"iss":iss,"iat":int(time.time()),"exp":int(time.time())+600,"aud":"appstoreconnect-v1"},key,algorithm="ES256",headers={"kid":kid,"typ":"JWT"})
+          def call(method,url):
+              r=urllib.request.Request(url,method=method,headers={"Authorization":"Bearer "+tok})
+              with urllib.request.urlopen(r) as f: return json.loads(f.read() or b"{}")
+          certs=call("GET","https://api.appstoreconnect.apple.com/v1/certificates?limit=200")["data"]
+          for c in certs:
+              a=c["attributes"]
+              if a.get("certificateType") in ("DEVELOPMENT","IOS_DEVELOPMENT","DISTRIBUTION","IOS_DISTRIBUTION"):
+                  try:
+                      call("DELETE","https://api.appstoreconnect.apple.com/v1/certificates/"+c["id"])
+                      print("revocato:",a.get("certificateType"),a.get("name"),a.get("expirationDate"))
+                  except Exception as e:
+                      print("non revocato:",a.get("name"),e)
+          PY
+
       - name: Archivia e firma
         if: steps.check.outputs.ok == 'true'
         run: |

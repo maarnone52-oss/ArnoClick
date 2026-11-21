@@ -12,13 +12,17 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         contentController.add(self, name: "save")
         contentController.add(self, name: "mic")
         contentController.add(self, name: "outs")
+        contentController.add(self, name: "xv")
 
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
+        // niente selezione del testo, menu Copia/Incolla e lente d'ingrandimento: ARNOCLICK è un'app, non una pagina da leggere
+        if #available(iOS 14.5, *) { config.preferences.isTextInteractionEnabled = false }
 
         webView = WKWebView(frame: .zero, configuration: config)
+        webView.allowsLinkPreview = false
         webView.isOpaque = false
         webView.backgroundColor = panelColor
         webView.scrollView.backgroundColor = panelColor
@@ -26,6 +30,20 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         webView.uiDelegate = self
         if #available(iOS 16.4, *) { webView.isInspectable = true }
         view = webView
+    }
+
+    /// Spegne le pressioni prolungate di sistema del WKWebView (lente, menu di testo, anteprima dei link).
+    /// Gli eventi touch arrivano comunque alla pagina, quindi i gesti di ARNOCLICK continuano a funzionare.
+    private func disableSystemLongPress(in v: UIView) {
+        for g in v.gestureRecognizers ?? [] where g is UILongPressGestureRecognizer {
+            g.isEnabled = false
+        }
+        for sub in v.subviews { disableSystemLongPress(in: sub) }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        disableSystemLongPress(in: webView)
     }
 
     override func viewDidLoad() {
@@ -99,6 +117,7 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
             if watchingRoute { sendOutputs() }
             return
         }
+        if message.name == "xv", let body = message.body as? [String: Any] { handleExtract(body); return }
         guard message.name == "save",
               let body = message.body as? [String: Any],
               let name = body["name"] as? String,
@@ -166,5 +185,47 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
     // Se il sistema chiude il motore della pagina (poca memoria), la ricarica.
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         webView.reload()
+    }
+
+    // MARK: - Estrazione dell'audio dai video (arriva a pezzi dalla pagina, torna come WAV a pezzi)
+
+    private func xvDir() -> URL {
+        let d = FileManager.default.temporaryDirectory.appendingPathComponent("xv", isDirectory: true)
+        try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        return d
+    }
+
+    private func handleExtract(_ body: [String: Any]) {
+        guard let id = body["id"] as? String, let index = body["index"] as? Int, let count = body["count"] as? Int,
+              let b64 = body["base64"] as? String, let data = Data(base64Encoded: b64) else { return }
+        let ext = ((body["name"] as? String).map { ($0 as NSString).pathExtension }).flatMap { $0.isEmpty ? nil : $0 } ?? "mov"
+        let src = xvDir().appendingPathComponent(id + "." + ext)
+        if index == 0 { FileManager.default.createFile(atPath: src.path, contents: nil) }
+        if let fh = try? FileHandle(forWritingTo: src) { fh.seekToEndOfFile(); fh.write(data); fh.closeFile() }
+        guard index == count - 1 else { return }
+        let dst = xvDir().appendingPathComponent(id + ".wav")
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            do {
+                try AudioExtract.toWav(src: src, dst: dst)
+                try? FileManager.default.removeItem(at: src)
+                let wav = try Data(contentsOf: dst)
+                try? FileManager.default.removeItem(at: dst)
+                let CH = 3 * 1024 * 1024, n = max(1, (wav.count + CH - 1) / CH)
+                for i in 0..<n {
+                    let part = wav.subdata(in: (i * CH)..<min(wav.count, (i + 1) * CH)).base64EncodedString()
+                    let sem = DispatchSemaphore(value: 0)
+                    DispatchQueue.main.async {
+                        self?.webView.evaluateJavaScript("window.__xvIn&&__xvIn('\(id)',\(i),\(n),'\(part)')") { _, _ in sem.signal() }
+                    }
+                    sem.wait()
+                }
+            } catch {
+                try? FileManager.default.removeItem(at: src)
+                let msg = (error as? AudioExtract.Fail).map { "\($0)" } ?? error.localizedDescription
+                DispatchQueue.main.async {
+                    self?.webView.evaluateJavaScript("window.__xvErr&&__xvErr('\(id)',\(String(reflecting: msg)))", completionHandler: nil)
+                }
+            }
+        }
     }
 }

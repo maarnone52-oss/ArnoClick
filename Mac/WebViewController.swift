@@ -64,6 +64,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         contentController.add(self, name: "save")
         contentController.add(self, name: "menuLang")
         contentController.add(self, name: "convert")
+        contentController.add(self, name: "xv")
         contentController.add(self, name: "outs")
 
         let config = WKWebViewConfiguration()
@@ -160,6 +161,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
             AudioOutputs.listen { [weak self] in self?.sendOutputs() }
             return
         }
+        if message.name == "xv", let body = message.body as? [String: Any] { handleExtract(body); return }
         if message.name == "convert", let action = message.body as? String {
             handleConvert(action)
             return
@@ -326,5 +328,47 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         webView.reload()
+    }
+
+    // MARK: - Estrazione dell'audio dai video (arriva a pezzi dalla pagina, torna come WAV a pezzi)
+
+    private func xvDir() -> URL {
+        let d = FileManager.default.temporaryDirectory.appendingPathComponent("xv", isDirectory: true)
+        try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        return d
+    }
+
+    private func handleExtract(_ body: [String: Any]) {
+        guard let id = body["id"] as? String, let index = body["index"] as? Int, let count = body["count"] as? Int,
+              let b64 = body["base64"] as? String, let data = Data(base64Encoded: b64) else { return }
+        let ext = ((body["name"] as? String).map { ($0 as NSString).pathExtension }).flatMap { $0.isEmpty ? nil : $0 } ?? "mov"
+        let src = xvDir().appendingPathComponent(id + "." + ext)
+        if index == 0 { FileManager.default.createFile(atPath: src.path, contents: nil) }
+        if let fh = try? FileHandle(forWritingTo: src) { fh.seekToEndOfFile(); fh.write(data); fh.closeFile() }
+        guard index == count - 1 else { return }
+        let dst = xvDir().appendingPathComponent(id + ".wav")
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            do {
+                try AudioExtract.toWav(src: src, dst: dst)
+                try? FileManager.default.removeItem(at: src)
+                let wav = try Data(contentsOf: dst)
+                try? FileManager.default.removeItem(at: dst)
+                let CH = 3 * 1024 * 1024, n = max(1, (wav.count + CH - 1) / CH)
+                for i in 0..<n {
+                    let part = wav.subdata(in: (i * CH)..<min(wav.count, (i + 1) * CH)).base64EncodedString()
+                    let sem = DispatchSemaphore(value: 0)
+                    DispatchQueue.main.async {
+                        self?.webView.evaluateJavaScript("window.__xvIn&&__xvIn('\(id)',\(i),\(n),'\(part)')") { _, _ in sem.signal() }
+                    }
+                    sem.wait()
+                }
+            } catch {
+                try? FileManager.default.removeItem(at: src)
+                let msg = (error as? AudioExtract.Fail).map { "\($0)" } ?? error.localizedDescription
+                DispatchQueue.main.async {
+                    self?.webView.evaluateJavaScript("window.__xvErr&&__xvErr('\(id)',\(String(reflecting: msg)))", completionHandler: nil)
+                }
+            }
+        }
     }
 }
