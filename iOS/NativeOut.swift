@@ -59,6 +59,26 @@ final class NativeOut {
     /// Numero di canali d'ingresso visti dal motore (0 = nessuno)
     private(set) var inChannels = 0
 
+    // Registrazione «base + suonato» (senza click): il thread audio mette base e ingresso in un anello,
+    // un thread a parte li scrive su due file grezzi; allo stop si allinea il suonato (ritardo della scheda)
+    // e si creano due WAV: il mix e la sola traccia suonata.
+    /// Chiamata (sul thread principale) con i due WAV pronti: mix, suonato, nome suggerito
+    var onRecorded: ((URL, URL, String) -> Void)?
+    var onRecError: ((String) -> Void)?
+    private var recOn = false
+    private let recCap = 1 << 19
+    private let recRing = UnsafeMutablePointer<Float>.allocate(capacity: (1 << 19) * 4)
+    private var recW = 0, recR = 0
+    private let recLock: UnsafeMutablePointer<os_unfair_lock> = {
+        let p = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1); p.initialize(to: os_unfair_lock()); return p
+    }()
+    private let scratch = UnsafeMutablePointer<Float>.allocate(capacity: 8192 * 4)   // base L R, ingresso A B
+    private var recTimer: DispatchSourceTimer?
+    private var recBaseFH: FileHandle?, recInFH: FileHandle?
+    private var recBaseURL: URL?, recInURL: URL?
+    private var recFrames = 0, recExtraMs = 0.0, recName = "", recLastN = 512
+    private let recQ = DispatchQueue(label: "arnoclick.rec")
+
     static var supported: Bool {
         if #available(macOS 10.15, iOS 13.0, *) { return true }
         return false
@@ -217,6 +237,9 @@ final class NativeOut {
                     prepare(); onChange?()
                 }
             }
+        case "rec":
+            if (b["on"] as? Bool) == true { recStart(extraMs: num("lat"), name: (b["name"] as? String) ?? "Registrazione") }
+            else { recStop() }
         case "drop":
             lock(); playing = false; shot = nil; slots.removeAll(); unlock()
             partial.removeAll()
@@ -268,6 +291,7 @@ final class NativeOut {
         let two = inB >= 0 && inB != inA
         for f in 0..<k {
             let r = (ringR + f) & mask
+            if recOn && f < 8192 { scratch[f * 4 + 2] = ringA[r]; scratch[f * 4 + 3] = two ? ringB[r] : ringA[r] }
             let va = ringA[r] * inGain, vb = (two ? ringB[r] : ringA[r]) * inGain
             if inOutSt && o1 != o0 { outs[o0][f] += va; outs[o1][f] += vb }
             else { outs[o0][f] += two ? (va + vb) * 0.5 : va }
@@ -293,7 +317,10 @@ final class NativeOut {
             p.initialize(repeating: 0, count: cnt)
             outs[nOut] = p; nOut += 1
         }
+        let rec = recOn && n <= 8192
+        if rec { scratch.initialize(repeating: 0, count: n * 4); recLastN = n }
         if nOut > 0 { mixInputs(n, nOut) }
+        defer { if rec { recPush(n) } }
         guard nOut > 0, os_unfair_lock_trylock(lockP) else { return }
         defer { os_unfair_lock_unlock(lockP) }
         let m0 = min(rM, nOut - 1), m1 = min(rM + 1, nOut - 1), c0 = min(rC, nOut - 1), c1 = min(rC + 1, nOut - 1)
@@ -302,6 +329,7 @@ final class NativeOut {
             for f in 0..<n {
                 if let m = mSlot {
                     let l = sample(m, pos, 0), r = m.ch > 1 ? sample(m, pos, 1) : l
+                    if rec { scratch[f * 4] = l * gm; scratch[f * 4 + 1] = r * gm }
                     if rMst && m1 != m0 { outs[m0][f] += l * gm; outs[m1][f] += r * gm }
                     else { outs[m0][f] += (l + r) * 0.5 * gm }
                 }
@@ -325,5 +353,112 @@ final class NativeOut {
                 if shotPos >= Double(s.frames) { shot = nil; break }
             }
         }
+    }
+
+    // MARK: - Registrazione base + suonato
+
+    private func recPush(_ n: Int) {
+        guard os_unfair_lock_trylock(recLock) else { return }
+        let mask = recCap - 1
+        if recW - recR + n <= recCap {
+            for f in 0..<n {
+                let w = ((recW + f) & mask) * 4
+                recRing[w] = scratch[f * 4]; recRing[w + 1] = scratch[f * 4 + 1]
+                recRing[w + 2] = scratch[f * 4 + 2]; recRing[w + 3] = scratch[f * 4 + 3]
+            }
+            recW += n
+        }
+        os_unfair_lock_unlock(recLock)
+    }
+
+    private static func i16(_ x: Float) -> Int16 { Int16(max(-1, min(1, x)) * 32767) }
+
+    /// Scrive sui file quello che il thread audio ha messo da parte
+    private func recDrain() {
+        os_unfair_lock_lock(recLock)
+        let a = recR, z = recW
+        os_unfair_lock_unlock(recLock)
+        let n = z - a
+        if n <= 0 { return }
+        var base = [Int16](repeating: 0, count: n * 2), inp = [Int16](repeating: 0, count: n * 2)
+        let mask = recCap - 1
+        for f in 0..<n {
+            let r = ((a + f) & mask) * 4
+            base[f * 2] = NativeOut.i16(recRing[r]); base[f * 2 + 1] = NativeOut.i16(recRing[r + 1])
+            inp[f * 2] = NativeOut.i16(recRing[r + 2]); inp[f * 2 + 1] = NativeOut.i16(recRing[r + 3])
+        }
+        os_unfair_lock_lock(recLock); recR = z; os_unfair_lock_unlock(recLock)
+        base.withUnsafeBufferPointer { recBaseFH?.write(Data(buffer: $0)) }
+        inp.withUnsafeBufferPointer { recInFH?.write(Data(buffer: $0)) }
+        recFrames += n
+    }
+
+    private func recStart(extraMs: Double, name: String) {
+        guard !recOn else { return }
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("rec", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let bu = dir.appendingPathComponent("base.raw"), iu = dir.appendingPathComponent("in.raw")
+        FileManager.default.createFile(atPath: bu.path, contents: nil)
+        FileManager.default.createFile(atPath: iu.path, contents: nil)
+        recBaseFH = try? FileHandle(forWritingTo: bu); recInFH = try? FileHandle(forWritingTo: iu)
+        recBaseURL = bu; recInURL = iu
+        recFrames = 0; recExtraMs = extraMs; recName = name
+        os_unfair_lock_lock(recLock); recW = 0; recR = 0; os_unfair_lock_unlock(recLock)
+        recOn = true
+        let t = DispatchSource.makeTimerSource(queue: recQ)
+        t.schedule(deadline: .now() + 0.1, repeating: 0.1)
+        t.setEventHandler { [weak self] in self?.recDrain() }
+        t.resume()
+        recTimer = t
+    }
+
+    private func recStop() {
+        guard recOn else { return }
+        recOn = false
+        recTimer?.cancel(); recTimer = nil
+        // ritardo totale tra la base sentita e il suonato che rientra: uscita + ingresso + un buffer (+ correzione a mano)
+        let lat = engine.outputNode.presentationLatency + engine.inputNode.presentationLatency
+        let shift = max(0, Int(((lat + recExtraMs / 1000) * hwRate).rounded()) + recLastN)
+        let rate = hwRate, gain = inGain, name = recName
+        recQ.async { [weak self] in
+            guard let self = self else { return }
+            self.recDrain()
+            self.recBaseFH?.closeFile(); self.recInFH?.closeFile(); self.recBaseFH = nil; self.recInFH = nil
+            guard let bu = self.recBaseURL, let iu = self.recInURL,
+                  let base = try? Data(contentsOf: bu), let inp = try? Data(contentsOf: iu) else {
+                DispatchQueue.main.async { self.onRecError?("file") }; return }
+            let frames = min(base.count, inp.count) / 4
+            if frames < Int(rate) { DispatchQueue.main.async { self.onRecError?("short") }; return }
+            var mix = [Int16](repeating: 0, count: frames * 2), dry = [Int16](repeating: 0, count: frames * 2)
+            base.withUnsafeBytes { (bp: UnsafeRawBufferPointer) in inp.withUnsafeBytes { (ip: UnsafeRawBufferPointer) in
+                let b = bp.bindMemory(to: Int16.self), i = ip.bindMemory(to: Int16.self)
+                for f in 0..<frames {
+                    let g = f + shift
+                    let a0: Int16 = g < frames ? i[g * 2] : 0, a1: Int16 = g < frames ? i[g * 2 + 1] : 0
+                    dry[f * 2] = a0; dry[f * 2 + 1] = a1
+                    for c in 0..<2 {
+                        let v = Float(b[f * 2 + c]) + Float(c == 0 ? a0 : a1) * gain
+                        mix[f * 2 + c] = Int16(max(-32768, min(32767, v)))
+                    }
+                }
+            } }
+            let dir = bu.deletingLastPathComponent()
+            let mu = dir.appendingPathComponent(name + " - mix.wav"), du = dir.appendingPathComponent(name + " - suonato.wav")
+            NativeOut.writeWav(mix, rate: rate, to: mu); NativeOut.writeWav(dry, rate: rate, to: du)
+            try? FileManager.default.removeItem(at: bu); try? FileManager.default.removeItem(at: iu)
+            DispatchQueue.main.async { self.onRecorded?(mu, du, name) }
+        }
+    }
+
+    static func writeWav(_ pcm: [Int16], rate: Double, to url: URL) {
+        var h = Data()
+        func s(_ x: String) { h.append(x.data(using: .ascii)!) }
+        func u32(_ v: UInt32) { var x = v.littleEndian; h.append(Data(bytes: &x, count: 4)) }
+        func u16(_ v: UInt16) { var x = v.littleEndian; h.append(Data(bytes: &x, count: 2)) }
+        let r = UInt32(rate.rounded()), bytes = UInt32(pcm.count * 2)
+        s("RIFF"); u32(36 + bytes); s("WAVE"); s("fmt "); u32(16); u16(1); u16(2); u32(r); u32(r * 4); u16(4); u16(16)
+        s("data"); u32(bytes)
+        pcm.withUnsafeBufferPointer { h.append(Data(buffer: $0)) }
+        try? h.write(to: url)
     }
 }

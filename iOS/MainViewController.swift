@@ -86,7 +86,9 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         // Ascolto dal vivo: la sessione audio passa a "registrazione e ascolto" (altoparlante, non auricolare)
         // e torna alla sola riproduzione quando l'ascolto finisce.
         if message.name == "outs" {
-            if let body = message.body as? [String: Any] { NativeOut.shared.handle(body); return }
+            if let body = message.body as? [String: Any] {
+                if (body["cmd"] as? String) == "rec" { setupRecCallbacks() }
+                NativeOut.shared.handle(body); return }
             NativeOut.shared.onChange = { [weak self] in self?.sendOutputs() }
             // Uscite audio: con una scheda audio USB chiede tutte le sue uscite (non solo 2)
             // e manda alla pagina il nome e il numero di uscite; si ripete a ogni cambio di collegamento.
@@ -226,6 +228,22 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
                     self?.webView.evaluateJavaScript("window.__xvErr&&__xvErr('\(id)',\(String(reflecting: msg)))", completionHandler: nil)
                 }
             }
+        }
+    }
+
+    // MARK: - Registrazione base + suonato: i due WAV si salvano dal menu di condivisione
+    private func setupRecCallbacks() {
+        NativeOut.shared.onRecError = { [weak self] e in self?.webView.evaluateJavaScript("window.__recDone&&__recDone(false,'\(e)')", completionHandler: nil) }
+        NativeOut.shared.onRecorded = { [weak self] mix, dry, _ in
+            guard let self = self else { return }
+            self.webView.evaluateJavaScript("window.__recDone&&__recDone(true)", completionHandler: nil)
+            let sheet = UIActivityViewController(activityItems: [mix, dry], applicationActivities: nil)
+            if let popover = sheet.popoverPresentationController {
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 1, height: 1)
+                popover.permittedArrowDirections = []
+            }
+            self.present(sheet, animated: true)
         }
     }
 }

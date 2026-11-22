@@ -5,6 +5,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var window: NSWindow!
     private let controller = WebViewController()
 
+    func applicationWillTerminate(_ notification: Notification) {
+        AudioInputs.restore()   // se si esce durante l'ascolto dal vivo, rimette l'ingresso di prima
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         controller.onLanguage = { [weak self] state in
             guard let self = self else { return }

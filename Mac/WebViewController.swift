@@ -65,6 +65,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         contentController.add(self, name: "menuLang")
         contentController.add(self, name: "convert")
         contentController.add(self, name: "xv")
+        contentController.add(self, name: "inputs")
         contentController.add(self, name: "outs")
 
         let config = WKWebViewConfiguration()
@@ -154,7 +155,9 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         }
         if message.name == "outs" {
             // Uscite audio separate: comandi per il motore nativo (carica, suona, ferma, volumi, mappa)
-            if let body = message.body as? [String: Any] { NativeOut.shared.handle(body); return }
+            if let body = message.body as? [String: Any] {
+                if (body["cmd"] as? String) == "rec" { setupRecCallbacks() }
+                NativeOut.shared.handle(body); return }
             // …oppure la pagina chiede nome e numero di uscite della scheda audio attuale
             sendOutputs()
             NativeOut.shared.onChange = { [weak self] in self?.sendOutputs() }
@@ -162,6 +165,20 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
             return
         }
         if message.name == "xv", let body = message.body as? [String: Any] { handleExtract(body); return }
+        if message.name == "inputs" {
+            if let body = message.body as? [String: Any], let id = body["use"] as? Int {
+                let ok = AudioInputs.use(id)
+                // il cambio d'ingresso richiede un istante prima che la pagina lo veda
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    self.webView.evaluateJavaScript("window.__inputUsed&&__inputUsed(\(ok))", completionHandler: nil)
+                }
+            } else if (message.body as? String) == "restore" {
+                AudioInputs.restore()
+            } else {
+                webView.evaluateJavaScript("window.__inputs&&__inputs(\(AudioInputs.json()))", completionHandler: nil)
+            }
+            return
+        }
         if message.name == "convert", let action = message.body as? String {
             handleConvert(action)
             return
@@ -368,6 +385,23 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
                 DispatchQueue.main.async {
                     self?.webView.evaluateJavaScript("window.__xvErr&&__xvErr('\(id)',\(String(reflecting: msg)))", completionHandler: nil)
                 }
+            }
+        }
+    }
+
+    // MARK: - Registrazione base + suonato: si sceglie dove salvare il mix, il suonato va accanto
+    private func setupRecCallbacks() {
+        NativeOut.shared.onRecError = { [weak self] e in self?.webView.evaluateJavaScript("window.__recDone&&__recDone(false,'\(e)')", completionHandler: nil) }
+        NativeOut.shared.onRecorded = { [weak self] mix, dry, name in
+            guard let self = self else { return }
+            self.webView.evaluateJavaScript("window.__recDone&&__recDone(true)", completionHandler: nil)
+            self.askWhereToSave(name: name + " - mix.wav") { url in
+                let fm = FileManager.default
+                try? fm.removeItem(at: url)
+                try fm.copyItem(at: mix, to: url)
+                let d = url.deletingLastPathComponent().appendingPathComponent(name + " - suonato.wav")
+                try? fm.removeItem(at: d)
+                try fm.copyItem(at: dry, to: d)
             }
         }
     }
