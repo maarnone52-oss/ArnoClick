@@ -76,6 +76,7 @@ targets:
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
         LSApplicationCategoryType: public.app-category.music
         NSHumanReadableCopyright: "© 2026 Maurizio Arnone"
+        ITSAppUsesNonExemptEncryption: false
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
         NSMicrophoneUsageDescription: "ARNOCLICK usa gli ingressi della scheda audio per suonare sulla base con il click."
