@@ -8,7 +8,7 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    MARKETING_VERSION: "3.1.13"
+    MARKETING_VERSION: "3.2.10"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
 targets:
@@ -44,7 +44,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         ITSAppUsesNonExemptEncryption: false
-        NSMicrophoneUsageDescription: "ARNOCLICK usa il microfono e gli ingressi della scheda audio per l'ascolto dal vivo e per suonare sulla base."
+        NSMicrophoneUsageDescription: "ARNOCLICK usa il microfono e gli ingressi della scheda audio per rilevare il tempo della musica dal vivo."
         NSCameraUsageDescription: "ARNOCLICK usa la fotocamera solo se scegli di registrare un video: ne ricava l'audio per rilevare il tempo e creare il click."
         NSPhotoLibraryUsageDescription: "ARNOCLICK apre i video e i brani che scegli dalla libreria per ricavarne l'audio."
         NSHumanReadableCopyright: "© 2026 Maurizio Arnone"
@@ -78,7 +78,7 @@ targets:
         NSHumanReadableCopyright: "© 2026 Maurizio Arnone"
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
-        NSMicrophoneUsageDescription: "ARNOCLICK usa gli ingressi della scheda audio per suonare sulla base con il click."
+        NSMicrophoneUsageDescription: "ARNOCLICK usa gli ingressi della scheda audio per rilevare il tempo della musica dal vivo."
     settings:
       base:
         PRODUCT_NAME: ArnoClick

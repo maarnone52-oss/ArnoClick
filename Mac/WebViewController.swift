@@ -67,6 +67,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         contentController.add(self, name: "xv")
         contentController.add(self, name: "inputs")
         contentController.add(self, name: "outs")
+        contentController.add(self, name: "reaper")
 
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -165,6 +166,7 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
             return
         }
         if message.name == "xv", let body = message.body as? [String: Any] { handleExtract(body); return }
+        if message.name == "reaper", let body = message.body as? [String: Any] { handleReaper(body); return }
         if message.name == "inputs" {
             if let body = message.body as? [String: Any], let id = body["use"] as? Int {
                 let ok = AudioInputs.use(id)
@@ -355,6 +357,65 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         return d
     }
 
+    // MARK: - Collegamento con Reaper
+    /// Chiede alla pagina di controllare se Reaper ha mandato un brano (all'avvio e quando l'app torna in primo piano).
+    func reaperPoll() { webView?.evaluateJavaScript("window.__reaperPoll&&__reaperPoll()", completionHandler: nil) }
+    private func jsStr(_ s: String) -> String {
+        let d = (try? JSONSerialization.data(withJSONObject: [s])) ?? Data("[\"\"]".utf8)
+        let a = String(data: d, encoding: .utf8) ?? "[\"\"]"
+        return String(a.dropFirst().dropLast())
+    }
+    private func handleReaper(_ body: [String: Any]) {
+        let cmd = body["cmd"] as? String ?? ""
+        if cmd == "check" {
+            guard let j = ReaperLink.job() else { return }
+            let obj: [String: String] = ["id": j["id"] ?? "", "name": j["name"] ?? "Reaper", "offs": j["offs"] ?? "0", "len": j["len"] ?? "0", "rate": j["rate"] ?? "1", "path": j["path"] ?? ""]
+            if let d = try? JSONSerialization.data(withJSONObject: obj), let js = String(data: d, encoding: .utf8) {
+                webView.evaluateJavaScript("window.__reaperJob&&__reaperJob(\(js))", completionHandler: nil)
+            }
+        } else if cmd == "load", let id = body["id"] as? String, let path = body["path"] as? String {
+            let src = URL(fileURLWithPath: path), dst = xvDir().appendingPathComponent(id + ".wav")
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                do {
+                    try AudioExtract.toWav(src: src, dst: dst)
+                    let wav = try Data(contentsOf: dst)
+                    try? FileManager.default.removeItem(at: dst)
+                    let CH = 3 * 1024 * 1024, n = max(1, (wav.count + CH - 1) / CH)
+                    for i in 0..<n {
+                        let part = wav.subdata(in: (i * CH)..<min(wav.count, (i + 1) * CH)).base64EncodedString()
+                        let sem = DispatchSemaphore(value: 0)
+                        DispatchQueue.main.async {
+                            self?.webView.evaluateJavaScript("window.__xvIn&&__xvIn('\(id)',\(i),\(n),'\(part)')") { _, _ in sem.signal() }
+                        }
+                        sem.wait()
+                    }
+                } catch {
+                    let msg = (error as? AudioExtract.Fail).map { "\($0)" } ?? error.localizedDescription
+                    DispatchQueue.main.async {
+                        self?.webView.evaluateJavaScript("window.__xvErr&&__xvErr('\(id)',\(String(reflecting: msg)))", completionHandler: nil)
+                    }
+                }
+            }
+        } else if cmd == "put", let id = body["job"] as? String, let name = body["name"] as? String,
+                  let index = (body["index"] as? NSNumber)?.intValue, let b64 = body["base64"] as? String, let data = Data(base64Encoded: b64) {
+            let f = ReaperLink.outDir(ReaperLink.safe(id)).appendingPathComponent(ReaperLink.safe(name))
+            if index == 0 { try? FileManager.default.removeItem(at: f); FileManager.default.createFile(atPath: f.path, contents: nil) }
+            if let fh = try? FileHandle(forWritingTo: f) { fh.seekToEndOfFile(); fh.write(data); fh.closeFile() }
+        } else if cmd == "done", let id = body["job"] as? String, let text = body["text"] as? String {
+            let out = ReaperLink.outDir(ReaperLink.safe(id)).path
+            let tmp = ReaperLink.dir.appendingPathComponent("result-\(ReaperLink.safe(id)).tmp")
+            let fin = ReaperLink.dir.appendingPathComponent("result-\(ReaperLink.safe(id)).txt")
+            do {
+                try ("dir=" + out + "\n" + text).write(to: tmp, atomically: true, encoding: .utf8)
+                try? FileManager.default.removeItem(at: fin)
+                try FileManager.default.moveItem(at: tmp, to: fin)
+                webView.evaluateJavaScript("window.__reaperSent&&__reaperSent(true)", completionHandler: nil)
+            } catch {
+                webView.evaluateJavaScript("window.__reaperSent&&__reaperSent(false,\(jsStr(error.localizedDescription)))", completionHandler: nil)
+            }
+        }
+    }
+
     private func handleExtract(_ body: [String: Any]) {
         guard let id = body["id"] as? String, let index = body["index"] as? Int, let count = body["count"] as? Int,
               let b64 = body["base64"] as? String, let data = Data(base64Encoded: b64) else { return }
@@ -395,13 +456,19 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         NativeOut.shared.onRecorded = { [weak self] mix, dry, name in
             guard let self = self else { return }
             self.webView.evaluateJavaScript("window.__recDone&&__recDone(true)", completionHandler: nil)
-            self.askWhereToSave(name: name + " - mix.wav") { url in
+            // Si sceglie il nome di una CARTELLA nuova: macOS dà il permesso proprio su quella, e dentro
+            // si possono scrivere entrambi i file (prima il secondo file, accanto al primo, veniva rifiutato).
+            self.askWhereToSave(name: name) { url in
                 let fm = FileManager.default
-                try? fm.removeItem(at: url)
-                try fm.copyItem(at: mix, to: url)
-                let d = url.deletingLastPathComponent().appendingPathComponent(name + " - suonato.wav")
-                try? fm.removeItem(at: d)
-                try fm.copyItem(at: dry, to: d)
+                var dir = url
+                if dir.pathExtension.lowercased() == "wav" { dir.deletePathExtension() }
+                var isDir: ObjCBool = false
+                if fm.fileExists(atPath: dir.path, isDirectory: &isDir), !isDir.boolValue { try fm.removeItem(at: dir) }
+                try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+                let m = dir.appendingPathComponent(name + " - mix.wav"), d = dir.appendingPathComponent(name + " - suonato.wav")
+                try? fm.removeItem(at: m); try fm.copyItem(at: mix, to: m)
+                try? fm.removeItem(at: d); try fm.copyItem(at: dry, to: d)
+                NSWorkspace.shared.activateFileViewerSelecting([m, d])
             }
         }
     }

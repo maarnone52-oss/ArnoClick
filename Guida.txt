@@ -265,22 +265,6 @@ Al primo ascolto di un brano l'app riceve musica e click: può comparire
 per un attimo "⏳ Preparo le uscite separate…".
 Sul Mac le uscite separate richiedono macOS 10.15 Catalina o successivo.
 
-INGRESSI (per suonare sulla base con il click)
-Nello stesso riquadro, "🎸 Ingressi" fa sentire lo strumento collegato
-agli ingressi della scheda audio insieme a base e click.
-- Accendi "🎸 Ingressi" (la prima volta l'app chiede il permesso di
-  usare il microfono/gli ingressi: rispondi Consenti).
-- Ingresso 1 e Ingresso 2: i due canali d'ingresso da usare (uno stereo
-  o due separati); con "—" sull'Ingresso 2 si usa un solo ingresso.
-- Verso: l'uscita dove mandarli (stereo: Ingresso 1 a sinistra e
-  Ingresso 2 a destra; mono: sommati) e il Volume.
-- Sul Mac la scheda va scelta sia come Uscita sia come Ingresso
-  (Preferenze di Sistema › Suono), poi si riapre ARNOCLICK.
-- C'è un piccolo ritardo (pochi millesimi di secondo); usa le cuffie per
-  evitare fischi. Gli ingressi si spengono a ogni riapertura dell'app.
-Con un mixer come la Ui24R lo strumento si può anche ascoltare
-direttamente dal mixer, senza nessun ritardo.
-
 ------------------------------------------------------------------------
 SELEZIONARE UN TRATTO SULLE TRACCE
 ------------------------------------------------------------------------
