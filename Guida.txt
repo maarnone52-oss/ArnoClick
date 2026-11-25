@@ -2,6 +2,21 @@ ARNOCLICK — guida all'installazione
 © 2026 Maurizio Arnone. Tutti i diritti riservati.
 
 ------------------------------------------------------------------------
+HARDWARE CONSIGLIATO (OPZIONALE)
+------------------------------------------------------------------------
+ARNOCLICK funziona con altoparlante, cuffie e microfono del dispositivo.
+Per lavorare meglio è consigliato:
+- una scheda audio USB «class compliant» (funziona senza driver su iPhone,
+  iPad e Mac), per esempio Soundcraft Ui24R o Zoom LiveTrak L-12;
+  su iPhone/iPad USB-C basta un cavo USB-C, con Lightning serve l'adattatore
+  Apple «da Lightning a USB per fotocamere» (meglio con presa di ricarica);
+- con almeno 4 uscite: «Uscite separate» per mandare musica e click su
+  uscite diverse (es. click solo in cuffia al batterista);
+- un microfono (o una linea dal mixer) collegato a un ingresso della scheda
+  per il Dal vivo: si ascoltano i primi due ingressi (LiveTrak: 1 e 2);
+- cuffie chiuse per chi suona con il click.
+
+------------------------------------------------------------------------
 NOVITÀ DELLA VERSIONE 3.1
 ------------------------------------------------------------------------
 - Video: se ne usa solo l'audio, che diventa un WAV e va nell'archivio

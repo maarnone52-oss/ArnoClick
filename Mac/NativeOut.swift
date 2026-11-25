@@ -27,6 +27,9 @@ final class NativeOut {
     private var observing = false
     /// Chiamata quando cambia la scheda audio o il numero di uscite.
     var onChange: (() -> Void)?
+    /// diagnosi per la pagina (stato del motore), chiesta con {cmd:'diag'}
+    var onDiag: (([String: Any]) -> Void)?
+    private var lastErr = ""
 
     // Stato della riproduzione (letto dal thread audio: sempre sotto lock)
     private let lockP: UnsafeMutablePointer<os_unfair_lock> = {
@@ -38,6 +41,10 @@ final class NativeOut {
     private let outs = UnsafeMutablePointer<UnsafeMutablePointer<Float>>.allocate(capacity: 128)
     private var playing = false
     private var mSlot: Slot?, cSlot: Slot?
+    /// Click generato qui al volo (posizioni dei colpi + due suoni): cambiare tempo, battuta o accento
+    /// non richiede più di rimandare tutto il click del brano
+    private struct Synth { var ev: [Double]; var amp: [Float]; var acc: [Bool]; var sN: [Float]; var sA: [Float]; var maxLen: Int }
+    private var synth: Synth?, useSynth = false
     private var pos = 0.0                 // in campioni del brano
     private var loopA = -1.0, loopB = -1.0
     private var gm: Float = 1, gc: Float = 1
@@ -49,6 +56,11 @@ final class NativeOut {
     private var inA = 0, inB = 1, inGain: Float = 1, inOut = 0, inOutSt = true
     private var sink: AVAudioNode?
     private var needRebuild = false
+    /// iOS: il Dal vivo sta usando il microfono (la sessione resta in registrazione)
+    var micOn = false { didSet { sessionActive = false } }
+    private var sessionActive = false
+    private var lastRebuild = Date.distantPast
+    private var rebuildPending = false
     private let ringSize = 16384
     private let ringA = UnsafeMutablePointer<Float>.allocate(capacity: 16384)
     private let ringB = UnsafeMutablePointer<Float>.allocate(capacity: 16384)
@@ -92,14 +104,22 @@ final class NativeOut {
         guard NativeOut.supported else { return false }
         #if os(iOS)
         let s = AVAudioSession.sharedInstance()
+        if !inOn && !micOn && s.category != .playback {
+            // senza ingressi né microfono: sessione di sola riproduzione, con tutte le uscite della scheda
+            try? s.setCategory(.playback, mode: .default, options: []); sessionActive = false
+        }
         if inOn {
             if s.category != .playAndRecord {
                 try? s.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothA2DP])
             }
             try? s.setPreferredIOBufferDuration(0.005)
         }
-        try? s.setActive(true)
-        if s.maximumOutputNumberOfChannels > 2 { try? s.setPreferredOutputNumberOfChannels(s.maximumOutputNumberOfChannels) }
+        // buffer corto anche in sola riproduzione: i cambi (click, volumi, salti) si sentono prima
+        if !sessionActive { try? s.setPreferredIOBufferDuration(0.005); try? s.setActive(true); sessionActive = true }
+        // solo se serve: ripeterlo a ogni ascolto faceva riconfigurare la scheda (pausa a ogni ripartenza)
+        if s.maximumOutputNumberOfChannels > 2 && s.outputNumberOfChannels < s.maximumOutputNumberOfChannels {
+            try? s.setPreferredOutputNumberOfChannels(s.maximumOutputNumberOfChannels)
+        }
         if inOn && s.maximumInputNumberOfChannels > 1 { try? s.setPreferredInputNumberOfChannels(s.maximumInputNumberOfChannels) }
         #endif
         let hw = engine.outputNode.outputFormat(forBus: 0)
@@ -117,6 +137,10 @@ final class NativeOut {
         let fmt: AVAudioFormat?
         if n <= 2 {
             fmt = AVAudioFormat(standardFormatWithSampleRate: rate, channels: AVAudioChannelCount(n))
+        } else if let hwLayout = hw.channelLayout, hw.channelCount == AVAudioChannelCount(n) {
+            // stesso schema di canali della scheda: niente conversioni (con alcune schede, es. Zoom LiveTrak,
+            // uno schema diverso spostava tutto sulle uscite 3/4)
+            fmt = AVAudioFormat(standardFormatWithSampleRate: rate, channelLayout: hwLayout)
         } else if let layout = AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | UInt32(n)) {
             fmt = AVAudioFormat(standardFormatWithSampleRate: rate, channelLayout: layout)
         } else { fmt = nil }
@@ -157,12 +181,24 @@ final class NativeOut {
             NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main) { [weak self] _ in
                 guard let self = self else { return }
                 self.needRebuild = true
+                // più cambi di configurazione ravvicinati (collegamento della scheda, cambio uscite): una sola ricostruzione
+                if Date().timeIntervalSince(self.lastRebuild) < 0.4 {
+                    if self.rebuildPending { return }
+                    self.rebuildPending = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                        guard let self = self else { return }
+                        self.rebuildPending = false; self.lastRebuild = Date()
+                        self.prepare(); self.onChange?()
+                    }
+                    return
+                }
+                self.lastRebuild = Date()
                 self.prepare()
                 self.onChange?()
             }
         }
         engine.prepare()
-        do { try engine.start() } catch { return false }
+        do { try engine.start() } catch { lastErr = error.localizedDescription; return false }
         return true
     }
 
@@ -179,10 +215,10 @@ final class NativeOut {
             if index == 0 {
                 partial[slot] = (id, Data(capacity: Int(num("frames")) * Int(num("ch")) * 2), num("sr"), Int(num("ch")), Int(num("frames")))
             }
-            guard var p = partial[slot], p.id == id else { return }
-            p.data.append(chunk)
-            partial[slot] = p
-            if index == count - 1 {
+            guard let cur = partial[slot], cur.id == id else { return }
+            // si aggiunge sul posto: copiare ogni volta tutto il brano bloccava l'app con i brani lunghi
+            partial[slot]?.data.append(chunk)
+            if index == count - 1, let p = partial[slot] {
                 partial[slot] = nil
                 var arr = [Int16](repeating: 0, count: p.data.count / 2)
                 arr.withUnsafeMutableBufferPointer { dst in _ = p.data.copyBytes(to: dst) }
@@ -194,18 +230,47 @@ final class NativeOut {
             rM = Int(num("m")); rMst = (b["mm"] as? String) != "mono"
             rC = Int(num("c")); rCst = (b["cm"] as? String) == "st"
             unlock()
+        case "diag":
+            var d: [String: Any] = ["run": engine.isRunning, "ch": channels, "rate": hwRate, "play": playing,
+                                    "pos": (mSlot?.sr ?? 0) > 0 ? pos / (mSlot?.sr ?? 1) : 0,
+                                    "lay": engine.outputNode.outputFormat(forBus: 0).channelLayout.map { String($0.layoutTag & 0xFFFF0000 >> 16) } ?? "-", "m": slots["m"] != nil, "c": slots["c"] != nil, "rM": rM, "rC": rC, "err": lastErr]
+            #if os(iOS)
+            let s = AVAudioSession.sharedInstance()
+            d["cat"] = s.category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: "")
+            d["hwch"] = s.outputNumberOfChannels; d["max"] = s.maximumOutputNumberOfChannels
+            #endif
+            onDiag?(d)
+        case "clk":
+            func floats(_ k: String) -> [Float] {
+                guard let b64 = b[k] as? String, let d = Data(base64Encoded: b64) else { return [] }
+                var a = [Int16](repeating: 0, count: d.count / 2)
+                a.withUnsafeMutableBufferPointer { dst in _ = d.copyBytes(to: dst) }
+                return a.map { Float($0) / 32768 }
+            }
+            let ev = (b["ev"] as? [NSNumber])?.map { $0.doubleValue } ?? []
+            let amp = (b["amp"] as? [NSNumber])?.map { $0.floatValue } ?? []
+            let acc = (b["acc"] as? [NSNumber])?.map { $0.boolValue } ?? []
+            let sN = floats("sn"), sA = floats("sa")
+            if ev.count == amp.count && ev.count == acc.count {
+                let sy = Synth(ev: ev, amp: amp, acc: acc, sN: sN, sA: sA, maxLen: max(sN.count, sA.count))
+                lock(); synth = sy; unlock()
+            }
         case "play":
-            prepare()
+            if !prepare() { lastErr = "start" }
             let ms = slots[(b["m"] as? String) ?? "m"], cs = slots[(b["c"] as? String) ?? "c"]
             lock()
-            mSlot = ms; cSlot = cs
+            let wasPlaying = playing, oldPos = pos, sameM = (mSlot?.frames ?? -1) == (ms?.frames ?? -2)
+            useSynth = (b["c"] as? String) == "@synth"
+            mSlot = ms; cSlot = useSynth ? nil : cs
             let sr = ms?.sr ?? cs?.sr ?? 48000
-            pos = max(0, num("from") * sr)
+            let np = max(0, num("from") * sr)
+            // stessa posizione (cambio del click durante l'ascolto): si continua senza salti
+            pos = (wasPlaying && sameM && abs(np - oldPos) < 0.08 * sr) ? oldPos : np
             if let a = b["la"] as? NSNumber, let z = b["lb"] as? NSNumber, z.doubleValue > a.doubleValue {
                 loopA = a.doubleValue * sr; loopB = z.doubleValue * sr
             } else { loopA = -1; loopB = -1 }
             gm = Float(num("gm")); gc = Float(num("gc"))
-            playing = ms != nil || cs != nil
+            playing = ms != nil || cs != nil || (useSynth && synth != nil)
             unlock()
         case "stop":
             lock(); playing = false; unlock()
@@ -324,6 +389,14 @@ final class NativeOut {
         guard nOut > 0, os_unfair_lock_trylock(lockP) else { return }
         defer { os_unfair_lock_unlock(lockP) }
         let m0 = min(rM, nOut - 1), m1 = min(rM + 1, nOut - 1), c0 = min(rC, nOut - 1), c1 = min(rC + 1, nOut - 1)
+        let sy = useSynth ? synth : nil
+        var si = 0
+        if let sy = sy, !sy.ev.isEmpty {   // primo colpo che può ancora suonare
+            var lo = 0, hi = sy.ev.count
+            let from = pos - Double(sy.maxLen)
+            while lo < hi { let mid = (lo + hi) / 2; if sy.ev[mid] < from { lo = mid + 1 } else { hi = mid } }
+            si = lo
+        }
         if playing, let ref = mSlot ?? cSlot {
             let step = ref.sr / hwRate
             for f in 0..<n {
@@ -338,8 +411,26 @@ final class NativeOut {
                     outs[c0][f] += v * gc
                     if rCst && c1 != c0 { outs[c1][f] += v * gc }
                 }
+                if let sy = sy {
+                    var v: Float = 0, j = si
+                    while j < sy.ev.count && sy.ev[j] <= pos {
+                        let k = Int(pos - sy.ev[j]), smp = sy.acc[j] ? sy.sA : sy.sN
+                        if k < smp.count { v += smp[k] * sy.amp[j] } else if j == si { si += 1 }
+                        j += 1
+                    }
+                    outs[c0][f] += v * gc
+                    if rCst && c1 != c0 { outs[c1][f] += v * gc }
+                }
                 pos += step
-                if loopB > 0 && pos >= loopB { pos = loopA + (pos - loopB) }
+                if loopB > 0 && pos >= loopB {
+                    pos = loopA + (pos - loopB)
+                    if let sy = sy {   // dopo il giro del loop si riparte dal colpo giusto
+                        var lo = 0, hi = sy.ev.count, from = pos - Double(sy.maxLen)
+                        if from < 0 { from = 0 }
+                        while lo < hi { let mid = (lo + hi) / 2; if sy.ev[mid] < from { lo = mid + 1 } else { hi = mid } }
+                        si = lo
+                    }
+                }
                 else if pos >= Double(ref.frames) { playing = false; break }
             }
         }
