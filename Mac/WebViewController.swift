@@ -68,6 +68,8 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         contentController.add(self, name: "inputs")
         contentController.add(self, name: "outs")
         contentController.add(self, name: "reaper")
+        // Dal vivo dove il motore web non ha il microfono (prima di macOS 12): l'audio lo cattura l'app
+        contentController.addUserScript(WKUserScript(source: LiveShim.source, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -168,6 +170,10 @@ final class WebViewController: NSViewController, WKScriptMessageHandler, WKNavig
         if message.name == "xv", let body = message.body as? [String: Any] { handleExtract(body); return }
         if message.name == "reaper", let body = message.body as? [String: Any] { handleReaper(body); return }
         if message.name == "inputs" {
+            if let body = message.body as? [String: Any], let cap = body["cap"] as? String {
+                LiveCapture.shared.handle(cap) { [weak self] js in self?.webView.evaluateJavaScript(js, completionHandler: nil) }
+                return
+            }
             if let body = message.body as? [String: Any], let id = body["use"] as? Int {
                 let ok = AudioInputs.use(id)
                 // il cambio d'ingresso richiede un istante prima che la pagina lo veda

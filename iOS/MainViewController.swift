@@ -4,6 +4,8 @@ import AVFoundation
 
 /// Mostra ARNOCLICK (Web/index.html) e salva i file esportati con il pannello Condividi.
 final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
+    /// ultimo ingresso scelto per il Dal vivo (resta selezionato tra un rilevamento e l'altro)
+    private var lastInputId = -1
     private var webView: WKWebView!
     private let panelColor = UIColor(red: 0.051, green: 0.055, blue: 0.063, alpha: 1)
 
@@ -11,6 +13,7 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
         let contentController = WKUserContentController()
         contentController.add(self, name: "save")
         contentController.add(self, name: "mic")
+        contentController.add(self, name: "inputs")
         contentController.add(self, name: "outs")
         contentController.add(self, name: "xv")
 
@@ -90,6 +93,11 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
                 if (body["cmd"] as? String) == "rec" { setupRecCallbacks() }
                 NativeOut.shared.handle(body); return }
             NativeOut.shared.onChange = { [weak self] in self?.sendOutputs() }
+            NativeOut.shared.onDiag = { [weak self] d in
+                if let j = try? JSONSerialization.data(withJSONObject: d), let js = String(data: j, encoding: .utf8) {
+                    self?.webView.evaluateJavaScript("window.__natDiag&&__natDiag(\(js))", completionHandler: nil)
+                }
+            }
             // Uscite audio: con una scheda audio USB chiede tutte le sue uscite (non solo 2)
             // e manda alla pagina il nome e il numero di uscite; si ripete a ogni cambio di collegamento.
             applyOutputChannels()
@@ -104,9 +112,57 @@ final class MainViewController: UIViewController, WKScriptMessageHandler, WKNavi
             }
             return
         }
+        // Ingressi per il Dal vivo: l'elenco lo dà iOS (la pagina da sola li vede solo dopo aver aperto il microfono)
+        if message.name == "inputs" {
+            // identificativi fissi: -1 predefinito, -2 scheda USB, -3 microfono interno, 0… altri ingressi (per nome)
+            let session = AVAudioSession.sharedInstance()
+            func port(_ id: Int) -> AVAudioSessionPortDescription? {
+                let list = session.availableInputs ?? []
+                switch id {
+                case -2: return list.first { $0.portType == .usbAudio }
+                case -3: return list.first { $0.portType == .builtInMic }
+                case let k where k >= 0: return list.filter { $0.portType != .usbAudio && $0.portType != .builtInMic }.dropFirst(k).first
+                default: return nil
+                }
+            }
+            if let body = message.body as? [String: Any], let id = body["use"] as? Int {
+                lastInputId = id
+                let p = port(id)
+                try? session.setPreferredInput(p)
+                // il nome serve alla pagina per aprire proprio quell'ingresso (altrimenti WebKit tiene la scheda USB)
+                var nm = "\"\""
+                if let n = p?.portName, let d = try? JSONSerialization.data(withJSONObject: [n]), let j = String(data: d, encoding: .utf8) {
+                    nm = String(j.dropFirst().dropLast())
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    self.webView.evaluateJavaScript("window.__inputUsed&&__inputUsed(true,\(nm))", completionHandler: nil)
+                }
+            } else if (message.body as? String) == "restore" {
+                // si lascia la scelta: resta valida per il prossimo rilevamento
+            } else {
+                let list = session.availableInputs ?? []
+                var arr: [[String: Any]] = [["id": -1, "name": "Predefinito", "ch": 0, "def": lastInputId == -1]]
+                if let m = list.first(where: { $0.portType == .builtInMic }) {
+                    arr.append(["id": -3, "name": m.portName, "ch": m.channels?.count ?? 0, "def": lastInputId == -3])
+                }
+                let usbIn = list.first { $0.portType == .usbAudio }
+                let usbOut = session.currentRoute.outputs.first { $0.portType == .usbAudio }
+                if let name = usbIn?.portName ?? usbOut?.portName {
+                    arr.append(["id": -2, "name": name, "ch": usbIn?.channels?.count ?? 0, "def": lastInputId == -2])
+                }
+                for (k, p) in list.filter({ $0.portType != .usbAudio && $0.portType != .builtInMic }).enumerated() {
+                    arr.append(["id": k, "name": p.portName, "ch": p.channels?.count ?? 0, "def": lastInputId == k])
+                }
+                if let j = try? JSONSerialization.data(withJSONObject: arr), let js = String(data: j, encoding: .utf8) {
+                    webView.evaluateJavaScript("window.__inputs&&__inputs(\(js))", completionHandler: nil)
+                }
+            }
+            return
+        }
         if message.name == "mic" {
             let on = (message.body as? Bool) ?? false
             let session = AVAudioSession.sharedInstance()
+            NativeOut.shared.micOn = on
             if on {
                 try? session.setCategory(.playAndRecord, mode: .measurement,
                                          options: [.defaultToSpeaker, .allowBluetoothA2DP, .mixWithOthers])
